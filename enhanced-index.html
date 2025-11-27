@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced QA Testing Portfolio - Bug Hunt Application v2.0</title>
+    <link rel="stylesheet" href="enhanced-styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Bug Hunt Shop v2.0 - Enhanced Validation</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#login" id="loginLink">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <h2>Welcome to Bug Hunt Shop v2.0</h2>
+            <p>Enhanced version with comprehensive input validation and error messaging for QA testing!</p>
+            
+            <!-- Search Feature with Enhanced Validation -->
+            <div class="search-container">
+                <h3>Product Search</h3>
+                <div class="input-group">
+                    <input type="text" id="searchInput" placeholder="Search for products..." maxlength="100">
+                    <button onclick="searchProducts()" id="searchBtn">Search</button>
+                </div>
+                <div id="searchError" class="error-message"></div>
+                <div id="searchResults"></div>
+                <div class="input-help">
+                    <h4>Search Field Accepts:</h4>
+                    <ul>
+                        <li>✅ Letters (a-z, A-Z)</li>
+                        <li>✅ Numbers (0-9)</li>
+                        <li>✅ Spaces and hyphens</li>
+                        <li>✅ 3-100 characters</li>
+                        <li>✅ Unicode characters (café, München)</li>
+                    </ul>
+                    <h4>Search Field Rejects:</h4>
+                    <ul>
+                        <li>❌ Less than 3 characters</li>
+                        <li>❌ Only spaces or special symbols</li>
+                        <li>❌ Script tags or HTML</li>
+                    </ul>
+                </div>
+                <p class="search-info">Try searching for: "laptop", "phone", "tablet", "gaming", "smart"</p>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <h2>Our Products</h2>
+            <div class="products-grid">
+                <div class="product-card" data-price="999.99">
+                    <img src="https://via.placeholder.com/200x150/0066cc/ffffff?text=Laptop" alt="Laptop">
+                    <h3>Gaming Laptop</h3>
+                    <p class="price">$999.99</p>
+                    <button onclick="addToCart('Gaming Laptop', 999.99)">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="599.99">
+                    <img src="https://via.placeholder.com/200x150/cc6600/ffffff?text=Phone" alt="Smartphone">
+                    <h3>Smartphone</h3>
+                    <p class="price">$599.99</p>
+                    <button onclick="addToCart('Smartphone', 599.99)">Add to Cart</button>
+                </div>
+                
+                <div class="product-card" data-price="299.99">
+                    <img src="https://via.placeholder.com/200x150/009900/ffffff?text=Tablet" alt="Tablet">
+                    <h3>Tablet</h3>
+                    <p class="price">$299.99</p>
+                    <button onclick="addToCart('Tablet', 299.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Shopping Cart -->
+            <div class="cart-container">
+                <h3>Shopping Cart</h3>
+                <div id="cartItems"></div>
+                <div class="cart-summary">
+                    <p>Subtotal: $<span id="subtotal">0.00</span></p>
+                    <p>Tax (8.5%): $<span id="tax">0.00</span></p>
+                    <p>Shipping: $<span id="shipping">5.99</span></p>
+                    <p><strong>Total: $<span id="total">5.99</span></strong></p>
+                    <button onclick="clearCart()" id="clearCartBtn">Clear Cart</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <h2>Contact Us</h2>
+            <form id="contactForm" onsubmit="submitContactForm(event)">
+                <div class="form-group">
+                    <label for="name">Name: <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required>
+                    <div id="nameError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Accepts:</strong> Letters, spaces, hyphens, apostrophes (2-100 chars)<br>
+                        <strong>Rejects:</strong> Numbers, special symbols, HTML tags
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email: <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                    <div id="emailError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Accepts:</strong> valid@email.com format (max 254 chars)<br>
+                        <strong>Rejects:</strong> Missing @, multiple @, invalid domains
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone">
+                    <div id="phoneError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Accepts:</strong> (555) 123-4567, 555-123-4567, 5551234567, +1-555-123-4567<br>
+                        <strong>Rejects:</strong> Letters, invalid formats, too short/long
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message: <span class="required">*</span></label>
+                    <textarea id="message" name="message" required maxlength="2000" rows="5"></textarea>
+                    <div id="messageError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Accepts:</strong> Any text (10-2000 characters)<br>
+                        <strong>Rejects:</strong> Less than 10 chars, script tags, only spaces
+                    </div>
+                    <div class="char-counter">
+                        <span id="messageCount">0</span>/2000 characters
+                    </div>
+                </div>
+                
+                <button type="submit">Send Message</button>
+            </form>
+            <div id="contactResult"></div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login" class="section">
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username: <span class="required">*</span></label>
+                    <input type="text" id="username" name="username" required>
+                    <div id="usernameError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Accepts:</strong> Letters, numbers, underscore (3-50 chars, case-insensitive)<br>
+                        <strong>Rejects:</strong> Special characters, spaces, less than 3 chars
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password: <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required>
+                    <div id="passwordError" class="error-message"></div>
+                    <div class="field-help">
+                        <strong>Requirements:</strong> 8+ chars, uppercase, lowercase, number<br>
+                        <strong>Rejects:</strong> Less than 8 chars, missing complexity requirements
+                    </div>
+                    <div class="password-strength">
+                        <div id="passwordStrength" class="strength-indicator"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember me for 30 days</label>
+                </div>
+                
+                <button type="submit">Login</button>
+            </form>
+            <div id="loginResult"></div>
+            <div class="test-credentials">
+                <h4>Test Credentials:</h4>
+                <p>Username: admin | Password: Password123</p>
+                <p>Try various invalid combinations to test validation!</p>
+            </div>
+        </section>
+
+        <!-- Input Testing Lab Section -->
+        <section id="testing-lab" class="section">
+            <h2>🧪 Input Testing Laboratory</h2>
+            <p>Use this section to systematically test different input types and see validation responses:</p>
+            
+            <div class="test-input-container">
+                <h3>Universal Input Tester</h3>
+                <div class="input-group">
+                    <label for="testInput">Test Input:</label>
+                    <input type="text" id="testInput" placeholder="Enter anything to test validation...">
+                    <select id="testType">
+                        <option value="name">Test as Name</option>
+                        <option value="email">Test as Email</option>
+                        <option value="phone">Test as Phone</option>
+                        <option value="search">Test as Search</option>
+                        <option value="username">Test as Username</option>
+                        <option value="password">Test as Password</option>
+                    </select>
+                    <button onclick="testInput()">Test Validation</button>
+                </div>
+                <div id="testResult" class="test-result"></div>
+                
+                <div class="test-suggestions">
+                    <h4>Try These Test Cases:</h4>
+                    <div class="test-cases">
+                        <button onclick="setTestInput('John O\'Connor')">Name with apostrophe</button>
+                        <button onclick="setTestInput('test@email')">Invalid email</button>
+                        <button onclick="setTestInput('(555) 123-4567')">Formatted phone</button>
+                        <button onclick="setTestInput('café München')">Unicode text</button>
+                        <button onclick="setTestInput('<script>alert(1)</script>')">XSS attempt</button>
+                        <button onclick="setTestInput('')">Empty input</button>
+                        <button onclick="setTestInput('   ')">Only spaces</button>
+                        <button onclick="setTestInput('a')">Single character</button>
+                        <button onclick="setTestInput('VeryLongTextThatExceedsNormalLimits123456789012345678901234567890')">Very long text</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Bug Hunt Shop v2.0. Enhanced for Comprehensive QA Testing | Built by BC</p>
+    </footer>
+
+    <script src="enhanced-script.js"></script>
+</body>
+</html>
