@@ -1,0 +1,10 @@
+BUG_HUNT_SHOP_2_URL = "file:///C:/Users/Owner/OneDrive/Attachments/Desktop/Bug%20Hunt%20Shop/Bug%20Hunt%20Shop%202/Bug%20Hunt%20Shop%202%20Files/index.html"
+SEARCH_TERMS = ["laptop", "phone", "tablet", "gaming", "smart"]
+EXPECTED_WORKING_TERMS = ["laptop", "phone", "tablet"]
+EXPECTED_BROKEN_TERMS = ["gaming", "smart"]
+VALID_NAME = "AnaMarie"
+VALID_EMAIL = "valid@email.com"
+VALID_PHONE = "2149292325"
+VALID_MESSAGE = "Let's get it!!"
+CORRECT_USERNAME = "admin"
+CORRECT_PASSWORD = "Password123"

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# PyCharm
+.idea/
+
+# Test reports
+reports/
+htmlcov/
+.coverage
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+
+# Pytest cache
+.pytest_cache/
+
+# WebDriver executables
+chromedriver
+geckodriver
