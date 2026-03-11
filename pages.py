@@ -17,6 +17,7 @@ class BugHuntShop2Page:
     TABLET_BUTTON_LOCATOR = (By.XPATH, "//div[@class='products-card']//h3[text()='Tablet']/following-sibling::button")
     WIRELESS_PHONES_BUTTON_LOCATOR = (By.XPATH, "//div[@id='searchResults']//strong[text()='Wireless Headphones']/following-sibling::button")
     SMART_WATCH_BUTTON_LOCATOR = (By.XPATH, "//div[@id='searchResults']//strong[text()='Smart Watch']/following-sibling::button")
+    CART_ITEM_PRICES_LOCATOR = (By.XPATH, "//div[@id='cartItems']//")
     CART_CONTAINER_LOCATOR = (By.XPATH, "//div[@class='cart-container']")
     CART_REMOVE_BUTTON_LOCATOR = (By.XPATH, "//div[@id='cartItems']//div[@class='cart-item'][{index}]//button")
     CART_REMOVE_ALL_BUTTONS_LOCATOR = (By.XPATH, "//div[@id='cartItems']//button")
@@ -125,3 +126,42 @@ class BugHuntShop2Page:
 
     def click_clear_cart_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.CART_REMOVE_BUTTON_LOCATOR))
+        element.click()
+
+    def verify_cart_summary_totals(self):
+        TAX_RATE = 0.085
+        SHIPPING = 5.99
+        # ---The notes are for me...---
+        # --- Step 1: Grab all item prices from cart and sum them ---
+        price_elements = self.driver.find_elements(*self.CART_ITEM_PRICES_LOCATOR)
+        item_prices = []
+        for pr_el in price_elements:
+            raw = pr_el.text.strip().replace("$", "")
+            item_prices.append(float(raw))
+
+        expected_subtotal = round(sum(item_prices), 2)
+        expected_tax = round(expected_subtotal * TAX_RATE, 2)
+        expected_shipping = SHIPPING
+        expected_total = round(expected_subtotal + expected_tax, + expected_shipping, 2)
+
+        # --- Step 2: Read what the UI is actually showing (no $ stripping needed) ---
+        actual_subtotal = float(
+            self.wait.until(EC.visibility_of_element_located(self.SUBTOTAL_SUM_LOCATOR))
+        )
+        actual_tax = float(
+            self.wait.until(EC.visibility_of_element_located(self.TAX_SUM_LOCATOR))
+        )
+        actual_shipping = float(
+            self.wait.until(EC.visibility_of_element_located(self.SHIPPING_TOTAL_LOCATOR))
+        )
+        actual_total = float(
+            self.wait.until(EC.visibility_of_element_located(self.FULL_TOTAL_LOCATOR))
+        )
+
+        # --- Step 3: Return results dictionary ---
+        return {
+            "subtotal": {"expected": expected_subtotal, "actual": actual_subtotal,    "pass": expected_subtotal == actual_subtotal},
+            "tax": {"expected": expected_tax,           "actual": actual_tax,         "pass": expected_tax == actual_tax},
+            "shipping": {"expected": expected_shipping, "actual": actual_shipping,    "pass": expected_shipping == actual_shipping},
+            "total": {"expected": expected_total,       "actual": actual_total,       "pass": expected_total == actual_total},
+        }
