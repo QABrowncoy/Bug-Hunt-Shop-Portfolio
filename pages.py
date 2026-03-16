@@ -139,7 +139,7 @@ class BugHuntShop2Page:
     def verify_cart_summary_totals(self):
         TAX_RATE = 0.085
         SHIPPING = 5.99
-        # ---The notes are for me...---
+        # ---The notes are for me (Corey)...---
         # --- Step 1: Grab all item prices from cart and sum them ---
         price_elements = self.driver.find_elements(*self.CART_ITEM_PRICES_LOCATOR)
         item_prices = []
