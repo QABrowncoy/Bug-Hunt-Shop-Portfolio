@@ -283,6 +283,12 @@ class BugHuntShop2Page:
     def click_univ_tester_dropdown(self, univ_tester_dropdown):
         element = self.wait.until(EC.element_to_be_clickable(self.TEST_SELECTOR_DROPDOWN_LOCATOR))
         Select(element).select_by_visible_text(univ_tester_dropdown)
+        # --- How you'd call it in tests using the visible text: ---
+        # --- page.click_univ_tester_dropdown("Test as Name")
+        # --- page.click_univ_tester_dropdown("Test as Email")
+        # --- page.click_univ_tester_dropdown("Test as Phone")
+        # --- page.click_univ_tester_dropdown("Test as Search")
+        # --- page.click_univ_tester_dropdown("Test as Username") ---
 
     def click_test_validation_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.TEST_VALIDATION_BUTTON_LOCATOR))
