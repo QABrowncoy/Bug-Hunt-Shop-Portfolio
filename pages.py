@@ -1,10 +1,10 @@
-from asyncio import wait
 from secrets import token_urlsafe
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
+from selenium.webdriver.support.ui import Select
 import json
 import time
 
@@ -39,7 +39,9 @@ class BugHuntShop2Page:
     TEST_INPUT_FIELD_LOCATOR = (By.ID, "testInput")
     TEST_SELECTOR_DROPDOWN_LOCATOR = (By.ID, "testType")
     TEST_VALIDATION_BUTTON_LOCATOR = (By.XPATH, "//button[contains(@onclick, 'testInput()')]")
-    TEST_RESULTS_FIELD_LOCATOR = (By.ID, "testResults")
+    TEST_RESULTS_FIELD_LOCATOR = (By.ID, "testResult")
+    TEST_RESULT_VALIDATION_LOCATOR = (By.CSS_SELECTOR, "#testResult p span")
+    TEST_RESULT_LENGTH_LOCATOR = (By.XPATH, "//div[@id='testResult']//p[contains(text(), 'characters')]")
 
     def __init__(self, driver):
         self.wait = WebDriverWait(driver, 10)
@@ -104,7 +106,7 @@ class BugHuntShop2Page:
         element.click()
 
     def click_wireless_headphones_from_products(self):
-        element = self.wait.until(EC.element_to_be_clickable(self.WIRELESS_HEADPHONES_BUTTON_LOCATOR))
+        element = self.wait.until(EC.element_to_be_clickable(self.WIRELESS_PHONES_BUTTON_LOCATOR))
         element.click()
 
     def shop_cart_result_cleared(self, product_name):
@@ -184,8 +186,8 @@ class BugHuntShop2Page:
         }
     def cont_us_name(self,name_text):
         try:
-            element = self.wait.until(EC.presence_of_element_located(*self.NAME_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(aelf.NAME_LOCATOR))
+            element = self.wait.until(EC.presence_of_element_located(self.NAME_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(self.NAME_LOCATOR))
             element.clear()
             element.send_keys(name_text)
         except:
@@ -196,20 +198,20 @@ class BugHuntShop2Page:
 
     def cont_us_email(self,email_text):
         try:
-            element = self.wait.until(EC.presence_of_element_located(*self.EMAIL_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(*self.EMAIL_LOCATOR))
+            element = self.wait.until(EC.presence_of_element_located(self.EMAIL_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(self.EMAIL_LOCATOR))
             element.clear()
             element.send_keys(email_text)
         except:
-            elememt = self.driver.find_element(*self.EMAIL_LOCATOR)
-            self.driver.execute_script("arguments[0].click();", elememt)
+            element = self.driver.find_element(*self.EMAIL_LOCATOR)
+            self.driver.execute_script("arguments[0].click();", element)
             element.clear()
             element.send_keys(email_text)
 
     def cont_us_phone(self,phone_text):
         try:
-            element = self.wait.until(EC.presence_of_element_located(*self.PHONE_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(*self.PHONE_LOCATOR))
+            element = self.wait.until(EC.presence_of_element_located(self.PHONE_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(self.PHONE_LOCATOR))
             element.clear()
             element.send_keys(phone_text)
         except:
@@ -220,8 +222,8 @@ class BugHuntShop2Page:
 
     def cont_us_message(self,message_text):
         try:
-            element = self.wait.until(EC.presence_of_element_located(*self.MESSAGE_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(*self.MESSAGE_LOCATOR))
+            element = self.wait.until(EC.presence_of_element_located(self.MESSAGE_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(self.MESSAGE_LOCATOR))
             element.clear()
             element.send_keys(message_text)
         except:
@@ -230,7 +232,7 @@ class BugHuntShop2Page:
             element.clear()
             element.send_keys(message_text)
 
-    def click_send_message_button(self, send_message_button):
+    def click_send_message_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.SEND_MESSAGE_BUTTON_LOCATOR))
         element.click()
 
@@ -240,7 +242,7 @@ class BugHuntShop2Page:
             element = self.wait.until(EC.element_to_be_clickable(self.USERNAME_LOCATOR))
             element.clear()
             element.send_keys(username_text)
-        except
+        except:
             element = self.driver.find_element(*self.USERNAME_LOCATOR)
             self.driver.execute_script("arguments[0].click();", element)
             element.clear()
@@ -258,18 +260,18 @@ class BugHuntShop2Page:
             element.clear()
             element.send_keys(password_text)
 
-    def click_remember_button(self, remember_button):
+    def click_remember_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.REMEMBER_ME_LOCATOR))
         element.click()
 
-    def click_log_in_button(self, log_in_button):
+    def click_log_in_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON_LOCATOR))
         element.click()
 
     def enter_univ_tester_input(self, univ_tester_input):
         try:
-            element = self.wait.until.(EC.presence_of_element_located(self.TEST_INPUT_FIELD_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(element))
+            element = self.wait.until(EC.presence_of_element_located(self.TEST_INPUT_FIELD_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(self.TEST_INPUT_FIELD_LOCATOR))
             element.clear()
             element.send_keys(univ_tester_input)
         except:
@@ -278,7 +280,79 @@ class BugHuntShop2Page:
             element.clear()
             element.send_keys(univ_tester_input)
 
-    def click_test_organ(self, test_organ_input):
-        try:
+    def click_univ_tester_dropdown(self, univ_tester_dropdown):
+        element = self.wait.until(EC.element_to_be_clickable(self.TEST_SELECTOR_DROPDOWN_LOCATOR))
+        Select(element).select_by_visible_text(univ_tester_dropdown)
+
+    def click_test_validation_button(self):
+        element = self.wait.until(EC.element_to_be_clickable(self.TEST_VALIDATION_BUTTON_LOCATOR))
+        element.click()
+
+    def get_test_result_validation(self):
+        element = self.wait.until(
+            EC.visibility_of_element_located(self.TEST_RESULT_VALIDATION_LOCATOR))
+        return element.text.strip()
+    # --- After going through the "boxes", you would go through the "nav's" and the "errors". ---
+
+    def click_nav_home(self):
+        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#home']")))
+        element.click()
+
+    def click_nav_products(self):
+        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#products']")))
+        element.click()
+
+    def click_nav_contact(self):
+        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#contat']")))
+        element.click()
+
+    def click_nav_login(self):
+        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#login']")))
+        element.click()
+
+    def get_search_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "searchError")))
+        element.text.strip()
+
+    def get_name_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "nameError")))
+        element.text.strip()
+
+    def get_email_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "emailError")))
+        element.text.strip()
+
+    def get_phone_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "phoneError")))
+        element.text.strip()
+
+    def get_message(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "message")))
+        element.text.strip()
+
+    def get_username(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "username")))
+        element.text.strip()
+
+    def get_password(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
+        element.text.strip()
+
+    def
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
