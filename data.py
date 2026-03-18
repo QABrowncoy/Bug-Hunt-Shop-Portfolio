@@ -1,5 +1,5 @@
 # ========== URL ==========
-BUG_HUNT_SHOP_2_URL = "file:///C:/Users/Owner/OneDrive/Attachments/Desktop/Bug%20Hunt%20Shop/Bug%20Hunt%20Shop%202/Bug%20Hunt%20Shop%202%20Files/index.html"
+BUG_HUNT_SHOP_2_URL = "enhanced-index.html"
 
 # ========== SEARCH ==========
 SEARCH_VALID_LATIN = "laptop"

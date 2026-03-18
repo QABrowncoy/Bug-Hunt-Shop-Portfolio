@@ -315,41 +315,41 @@ class BugHuntShop2Page:
     # --- 7 error message getters ---
 
     def get_search_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "searchError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "searchError")))
         return element.text.strip()
 
     def get_name_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "nameError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "nameError")))
         return element.text.strip()
 
     def get_email_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "emailError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "emailError")))
         return element.text.strip()
 
     def get_phone_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "phoneError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "phoneError")))
         return element.text.strip()
 
     def get_message_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "messageError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "messageError")))
         return element.text.strip()
 
     def get_username_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "usernameError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "usernameError")))
         return element.text.strip()
 
     def get_password_error(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "passwordError")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "passwordError")))
         return element.text.strip()
 
     # --- 2 form result getters ---
 
     def get_contact_result(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "contactResult")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "contactResult")))
         return element.text.strip()
 
     def get_login_result(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "loginResult")))
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "loginResult")))
         return element.text.strip()
 
     # --- 1 character counter getter ---

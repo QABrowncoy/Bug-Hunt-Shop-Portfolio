@@ -6,5 +6,5 @@ import time
 
 class TestPasswordValidation:
     """Test cases for password requirements"""
-    def tes_password_less_than_8_char_invalid
+    def test_password_less_than_8_char_invalid
 
