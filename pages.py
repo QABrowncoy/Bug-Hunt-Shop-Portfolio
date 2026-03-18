@@ -292,6 +292,7 @@ class BugHuntShop2Page:
         element = self.wait.until(
             EC.visibility_of_element_located(self.TEST_RESULT_VALIDATION_LOCATOR))
         return element.text.strip()
+
     # --- After going through the "boxes", you would go through the "nav's" and the "errors". ---
 
     def click_nav_home(self):
@@ -309,6 +310,8 @@ class BugHuntShop2Page:
     def click_nav_login(self):
         element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#login']")))
         element.click()
+
+    # ---And of course, the errors,... ---
 
     def get_search_error(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "searchError")))
@@ -338,8 +341,9 @@ class BugHuntShop2Page:
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
         element.text.strip()
 
-    def
-
+    def get_contact_result(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "contactResult")))
+        element.text.strip()
 
 
 
