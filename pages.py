@@ -294,6 +294,7 @@ class BugHuntShop2Page:
         return element.text.strip()
 
     # --- After going through the "boxes", you would go through the "nav's" and the "errors". ---
+    # --- 4 nav click methods ---
 
     def click_nav_home(self):
         element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#home']")))
@@ -304,49 +305,91 @@ class BugHuntShop2Page:
         element.click()
 
     def click_nav_contact(self):
-        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#contat']")))
+        element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#contact']")))
         element.click()
 
     def click_nav_login(self):
         element = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#login']")))
         element.click()
 
-    # ---And of course, the errors,... ---
+    # --- 7 error message getters ---
 
     def get_search_error(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "searchError")))
-        element.text.strip()
+        return element.text.strip()
 
     def get_name_error(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "nameError")))
-        element.text.strip()
+        return element.text.strip()
 
     def get_email_error(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "emailError")))
-        element.text.strip()
+        return element.text.strip()
 
     def get_phone_error(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "phoneError")))
-        element.text.strip()
+        return element.text.strip()
 
-    def get_message(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "message")))
-        element.text.strip()
+    def get_message_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "messageError")))
+        return element.text.strip()
 
-    def get_username(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "username")))
-        element.text.strip()
+    def get_username_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "usernameError")))
+        return element.text.strip()
 
-    def get_password(self):
-        element = self.wait.until(EC.visibility_of_element_located((By.ID, "password")))
-        element.text.strip()
+    def get_password_error(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "passwordError")))
+        return element.text.strip()
+
+    # --- 2 form result getters ---
 
     def get_contact_result(self):
         element = self.wait.until(EC.visibility_of_element_located((By.ID, "contactResult")))
-        element.text.strip()
+        return element.text.strip()
 
+    def get_login_result(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "loginResult")))
+        return element.text.strip()
 
+    # --- 1 character counter getter ---
 
+    def get_message_char_count(self):
+        element = self.wait.until(EC.visibility_of_element_located((By.ID, "messageCount")))
+        return element.text.strip()
+
+    # --- 1 password strength getter ---
+
+    def get_password_strength(self):
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "passwordStrength")))
+        return element.get_attribute("class")
+        # --- This is where you'll USE it later in test.py...
+        # --- def test_password_strength_strong():
+        #     page.log_password("Password123")
+        #     assert "strength-strong" in page.get_password_strength()
+        #
+        # def test_password_strength_weak():
+        #     page.log_password("abc")
+        #     assert "strength-weak" in page.get_password_strength() ---
+
+    # --- 1 test suggestion clicker ---
+
+    def click_test_suggestion(self, button_text):
+        locator = (
+            By.XPATH,
+            f"//div[@class='test-cases']//button[contains(text(), '{button_text}')]"
+        )
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        element.click()
+    # ---Call like: page.click_test_suggestion("Name with apostrophe") ---
+    # ---Suggestion types for testing are: Name with apostrophe, Invalid email, Formatted phone, Unicode text, ---
+    # ---XSS attempt, Empty input, Only spaces, Single character, Very long text ---
+
+    # --- 1 test result length getter ---
+
+    def get_test_result_length(self):
+        element = self.wait.until(EC.visibility_of_element_located(self.TEST_RESULT_LENGTH_LOCATOR))
+        return element.text.strip()
 
 
 
