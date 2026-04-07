@@ -8,6 +8,8 @@ def test_launch_app(driver):
     """Verifies the app opens and has the correct title."""
     assert "Bug Hunt" in driver.title
 
+# ---"Product Search" search cases ---
+
 def test_case_1_search_field_visible(driver):
     """Case-1: Verifies the search field is visible."""
     page = BugHuntShop2Page(driver)
@@ -79,7 +81,7 @@ def test_cases_rejects_invalid_characters(driver, term, case_id):
     assert page.get_search_error() != ""
 
 def test_case_24_invalid_search_shows_not_found_message(driver):
-    # --- Case-24: Verify invalid input displays "Not found for {invalid input} message.---
+    # --- Case-24: Verify invalid input displays "Not found for {invalid input}" message.---
     page = BugHuntShop2Page(driver)
     page.enter_product_search("camera")
     page.click_search_button()
@@ -90,9 +92,9 @@ def test_case_24_invalid_search_shows_not_found_message(driver):
 @pytest.mark.parametrize("term, case_id", [
     (data.SEARCH_BOUNDARY_1_CHAR,     "Case-26"),
     (data.SEARCH_BOUNDARY_2_CHAR,     "Case-26"),
+    (data.SEARCH_BOUNDARY_3_CHAR,     "Case-27"),
     (data.SEARCH_BOUNDARY_14_CHAR,    "Case-27"),
     (data.SEARCH_BOUNDARY_97_CHAR,    "Case-27"),
-    (data.SEARCH_BOUNDARY_101_CHAR,   "Case-28"),
 ])
 def test_search_boundary_values(driver, term, case_id):
     # --- Cases 26,27,28: Verify boundary values in Products Search field ---
@@ -102,6 +104,64 @@ def test_search_boundary_values(driver, term, case_id):
     if case_id == "Case-27":
         # Valid length - no error expected
         assert page.get_search_error() == ""
-    else:
+    elif case_id == "Case-26":
         # Invalid length - error expected
         assert page.get_search_error() != ""
+    else:
+        raise ValueError(f"Unexpected case_id: {case_id}")
+
+@pytest.mark.xfail(reason="BHS2-17: Field silently caps at 100 characters, no error shown")
+def test_case_28_over_limit_shows_error(driver):
+    # ---Case-28: Verify input over 100 characters is rejected with an error message ---
+    page = BugHuntShop2Page(driver)
+    page.enter_product_search(data.SEARCH_BOUNDARY_101_CHAR)
+    page.click_search_button()
+    assert page.get_search_error() != ""
+
+# ---Our Products & Shopping Cart Test Cases ---
+
+def test_case_29_all_products_present(driver):
+    # ---Case-29: Verify all {product} selections are present in design ---
+    page = BugHuntShop2Page(driver)
+    assert len(page.get_product_cards()) == 3
+
+def test_case_30_products_aligned_in_a_row(driver):
+    # ---Case-30: Verify {product} selections are aligned in a row on the display ---
+    page = BugHuntShop2Page(driver)
+    products = page.get_product_cards()
+    y_positions = [p.location['y'] for p in products]
+    assert max(y_positions) - min(y_positions) <= 5
+
+def test_case_31_products_spelling_is_correct(driver):
+    # ---Case-31: Verify product's spelling is correct on display ---
+    page = BugHuntShop2Page(driver)
+    names = page.get_product_names()
+    assert "Gaming Laptop" in names
+    assert "Smartphone" in names
+    assert "Tablet" in names
+
+def test_case_32_product_prices_correct(driver):
+    # ---Verify price of {product} is correct by requirements ---
+    page = BugHuntShop2Page(driver)
+    prices = page.get_product_prices()
+    assert "$999.99" in prices
+    assert "599.99" in prices
+    assert "299.99" in prices
+
+def test_case_33_subtotal_empty_cart(driver):
+    # ---Verify "Subtotal" displays "0.00" when "Shopping Cart" is empty ---
+    page = BugHuntShop2Page(driver)
+    subtotal = page.driver.find_element(*page.SUBTOTAL_SUM_LOCATOR).text.strip()
+    assert subtotal == "0.00"
+
+@pytest.mark.xfail(reason="BHS2-18: Tax calculated as subtotal + 0.085 instead of subtotal * 0.085")
+def test_case_34_tax_correct_empty_cart(driver):
+    # ---Verify "Tax" percentage is correct by requirements ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    subtotal = float(page.driver.find_element(*page.SUBTOTAL_SUM_LOCATOR).text.strip())
+    expected_tax = round(subtotal * 0.085, 2)
+    actual_tax = float(page.driver.find_element(*page.TAX_SUM_LOCATOR).text.strip())
+    assert actual_tax == expected_tax
+
+

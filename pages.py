@@ -15,7 +15,7 @@ class BugHuntShop2Page:
     SEARCH_RESULTS_ADD_BUTTONS_LOCATOR = (By.XPATH, "//div[@id='searchResults']//button")
     GAMING_LAPTOP_BUTTON_LOCATOR = (By.XPATH, "//div[@class='product-card']//h3[text()='Gaming Laptop']/following-sibling::button")
     SMARTPHONE_BUTTON_LOCATOR = (By.XPATH, "//div[@class='product-card']//h3[text()='Smartphone']/following-sibling::button")
-    TABLET_BUTTON_LOCATOR = (By.XPATH, "//div[@class='products-card']//h3[text()='Tablet']/following-sibling::button")
+    TABLET_BUTTON_LOCATOR = (By.XPATH, "//div[@class='product-card']//h3[text()='Tablet']/following-sibling::button")
     WIRELESS_PHONES_BUTTON_LOCATOR = (By.XPATH, "//div[@id='searchResults']//strong[text()='Wireless Headphones']/following-sibling::button")
     SMART_WATCH_BUTTON_LOCATOR = (By.XPATH, "//div[@id='searchResults']//strong[text()='Smart Watch']/following-sibling::button")
     CART_ITEM_PRICES_LOCATOR = (By.XPATH, "//div[@id='cartItems']//div[@class='cart-item']//span[contains(text(), '$')]")
@@ -109,6 +109,20 @@ class BugHuntShop2Page:
         element = self.wait.until(EC.element_to_be_clickable(self.WIRELESS_PHONES_BUTTON_LOCATOR))
         element.click()
 
+    def get_product_cards(self):
+        #--- Returns all product card elements ---
+        return self.driver.find_elements(By.XPATH, "//div[@class='product-card']")
+
+    def get_product_names(self):
+        # ---Returns list of product name strings ---
+        names = self.driver.find_elements(By.XPATH, "//div[@class='product-card']//h3")
+        return [n.text for n in names]
+
+    def get_product_prices(self):
+        # ---Returns list of product price strings ---
+        prices = self.driver.find_elements(By.XPATH, "//div[@class='product-card']//p[@class='price']")
+        return [p.text for p in prices]
+
     def shop_cart_result_cleared(self, product_name):
         locator = (
             By.XPATH,
@@ -146,6 +160,21 @@ class BugHuntShop2Page:
     def click_clear_cart_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.CLEAR_CART_BUTTON_LOCATOR))
         element.click()
+
+    # ---Cart state getters ---
+    def get_cart_items(self):
+        return self.driver.find_elements(By.XPATH, "//div[@id='cartItems']//div[@class='cart-item']")
+
+    def get_cart_item_count(self):
+        """Returns nummber of items currently in cart."""
+        return len(self.get_cart_items())
+
+    def get_remove_buttons(self):
+        return self.driver.find_elements(*self.CART_REMOVE_ALL_BUTTONS_LOCATOR)
+
+    def get_cart_message(self):
+        element = self.wait.until(EC.presence_of_element_located((By.ID, "cartItems")))
+        return element.text.strip()
 
     def verify_cart_summary_totals(self):
         TAX_RATE = 0.085
