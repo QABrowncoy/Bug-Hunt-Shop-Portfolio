@@ -145,8 +145,8 @@ def test_case_32_product_prices_correct(driver):
     page = BugHuntShop2Page(driver)
     prices = page.get_product_prices()
     assert "$999.99" in prices
-    assert "599.99" in prices
-    assert "299.99" in prices
+    assert "$599.99" in prices
+    assert "$299.99" in prices
 
 def test_case_33_subtotal_empty_cart(driver):
     # ---Verify "Subtotal" displays "0.00" when "Shopping Cart" is empty ---
@@ -163,5 +163,41 @@ def test_case_34_tax_correct_empty_cart(driver):
     expected_tax = round(subtotal * 0.085, 2)
     actual_tax = float(page.driver.find_element(*page.TAX_SUM_LOCATOR).text.strip())
     assert actual_tax == expected_tax
+
+def test_case_35_shipping_cost_correct(driver):
+    # ---Verify "Shipping" shows $5.99" ---
+    page = BugHuntShop2Page(driver)
+    shipping = page.driver.find_element(*page.SHIPPING_TOTAL_LOCATOR).text.strip()
+    assert shipping == "5.99"
+
+@pytest.mark.xfail(reason="BHS2-19: Total should reflect $0.00 subtotal + $0.00 tax + $5.99 shipping only after a product is added")
+def test_case_36_zero_total_with_no_product(driver):
+    page = BugHuntShop2Page(driver)
+    total = page.driver.find_element(*page.FULL_TOTAL_LOCATOR).text.strip()
+    assert total == "0.00"
+
+def test_case_37_prod_can_be_added_to_cart(driver):
+    # --- Verify a clickable {product} can be added to the "Shopping Cart". ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    assert page.get_cart_item_count() == 1
+
+@pytest.mark.parametrize("products, case_id", [
+    (data.CART_BOUNDARY_0_PRODUCTS, "Case-38"),
+    (data.CART_BOUNDARY_1_PRODUCTS, "Case-39"),
+    (data.CART_BOUNDARY_2_PRODUCTS, "Case-39"),
+    (data.CART_BOUNDARY_3_PRODUCTS, "Case-39"),
+    (data.CART_BOUNDARY_7_PRODUCTS, "Case-40"),
+])
+def test_products_boundary_values(driver, products, case_id):
+    page = BugHuntShop2Page(driver)
+    for p in range(products):
+        page.click_gaming_laptop_from_products_box()
+    assert page.get_cart_item_count() == products
+
+
+
+
+
 
 
