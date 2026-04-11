@@ -184,7 +184,7 @@ def test_case_37_prod_can_be_added_to_cart(driver):
 
 @pytest.mark.parametrize("products, case_id", [
     (data.CART_BOUNDARY_0_PRODUCTS, "Case-38"),
-    (data.CART_BOUNDARY_1_PRODUCTS, "Case-39"),
+    (data.CART_BOUNDARY_1_PRODUCT, "Case-39"),
     (data.CART_BOUNDARY_2_PRODUCTS, "Case-39"),
     (data.CART_BOUNDARY_3_PRODUCTS, "Case-39"),
     (data.CART_BOUNDARY_7_PRODUCTS, "Case-40"),
@@ -195,9 +195,11 @@ def test_products_boundary_values(driver, products, case_id):
         page.click_gaming_laptop_from_products_box()
     assert page.get_cart_item_count() == products
 
-
-
-
-
+def test_case_41_product_added_message_appears(driver):
+    # ---Verify when {product} is added to "Cart", the message "{product} is added to cart!" appears. ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    notification = page.get_add_to_cart_notification("Gaming Laptop")
+    assert notification.is_displayed()
 
 

@@ -176,6 +176,10 @@ class BugHuntShop2Page:
         element = self.wait.until(EC.presence_of_element_located((By.ID, "cartItems")))
         return element.text.strip()
 
+    def get_add_to_cart_notification(self, product_name):
+        locator = (By.XPATH, f"//div[contains(text(), '{product_name} added to cart!')]")
+        return self.wait.until(EC.visibility_of_element_located(locator))
+
     def verify_cart_summary_totals(self):
         TAX_RATE = 0.085
         SHIPPING = 5.99
