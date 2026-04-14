@@ -1,4 +1,6 @@
 import pytest
+
+from conftest import driver
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
@@ -258,19 +260,39 @@ def test_case_43_sum_of_subtotal_tax_and_shipping_correct(driver):
     actual_total = round(subtotal + actual_tax + shipping, 2)
     assert actual_total == expected_total
 
-def test_case_44_clear_cart_button_present(driver):
-    # ---Case-44: Verify "Clear Cart" button is clear and visible. ---
+def test_case_44_shopping_cart_initial_state_no_message(driver):
+    # ---Case-44: Verify "Shopping Cart" shows no message before {product} is added. ---
+    page = BugHuntShop2Page(driver)
+    assert page.get_cart_message() == ""
+
+def test_case_45_clear_cart_button_present(driver):
+    # ---Case-45: Verify "Clear Cart" button is clear and visible. ---
     page = BugHuntShop2Page(driver)
     element = page.wait.until(EC.visibility_of_element_located(page.CLEAR_CART_BUTTON_LOCATOR))
     assert element.is_displayed()
 
-def test_case_45_clear_cart_button_clickable(driver):
-    # ---Case-45: Verify "Clear Cart" button is clickable. ---
+def test_case_46_clear_cart_button_clickable(driver):
+    # ---Case-46: Verify "Clear Cart" button is clickable. ---
     page = BugHuntShop2Page(driver)
     element = page.wait.until(EC.element_to_be_clickable(page.CLEAR_CART_BUTTON_LOCATOR))
     assert element.is_enabled()
 
+def test_case_47_cart_is_empty_message(driver):
+    # ---Case-47: Verify "Shopping Cart" displays message "Your cart is empty" when {product} added and "Clear Cart" button clicked. ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    page.click_clear_cart_button()
+    assert page.get_cart_message() == "Your cart is empty"
 
+def test_case_48_cart_cleared_message(driver):
+    # ---Case-48: Verify "Cart cleared" message appears when {product} is in "Shopping Cart" and "Clear Cart" button is clicked. ---
+    page = BugHuntShop2Page(driver)
+    page.enter_product_search("Wireless Headphones")
+    page.click_search_button()
+    page.sear_results_added("Wireless Headphones")
+    page.click_clear_cart_button()
+    notification = page.get_cart_cleared_notification()
+    assert notification.is_displayed()
 
 
 

@@ -190,6 +190,11 @@ class BugHuntShop2Page:
         locator = (By.XPATH, f"//div[contains(text(), '{product_name} added to cart!')]")
         return self.wait.until(EC.visibility_of_element_located(locator))
 
+    def get_cart_cleared_notification(self):
+        """Returns the Cart cleared notification element."""
+        locator = (By.XPATH, "//div[contains(text(), 'Cart cleared')]")
+        return self.wait.until(EC.visibility_of_element_located(locator))
+
     def get_subtotal(self):
         """Returns subtotal as float."""
         return float(self.wait.until(EC.visibility_of_element_located(self.SUBTOTAL_SUM_LOCATOR)).text.strip())
