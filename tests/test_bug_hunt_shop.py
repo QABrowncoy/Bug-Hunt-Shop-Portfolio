@@ -120,10 +120,11 @@ def test_case_28_over_limit_shows_error(driver):
 
 # ---Our Products & Shopping Cart Test Cases ---
 
+@pytest.mark.xfail(reason="BHS2-1: Only 3 of 5 products are displayed in product grid.")
 def test_case_29_all_products_present(driver):
     # ---Case-29: Verify all {product} selections are present in design ---
     page = BugHuntShop2Page(driver)
-    assert len(page.get_product_cards()) == 3
+    assert len(page.get_product_cards()) == 5
 
 def test_case_30_products_aligned_in_a_row(driver):
     # ---Case-30: Verify {product} selections are aligned in a row on the display ---
@@ -172,6 +173,7 @@ def test_case_35_shipping_cost_correct(driver):
 
 @pytest.mark.xfail(reason="BHS2-19: Total should reflect $0.00 subtotal + $0.00 tax + $5.99 shipping only after a product is added")
 def test_case_36_zero_total_with_no_product(driver):
+    # ---Verify  "Total" is "0.00" with no {product} is added. ---
     page = BugHuntShop2Page(driver)
     total = page.driver.find_element(*page.FULL_TOTAL_LOCATOR).text.strip()
     assert total == "0.00"
@@ -184,7 +186,7 @@ def test_case_37_prod_can_be_added_to_cart(driver):
 
 @pytest.mark.parametrize("products, case_id", [
     (data.CART_BOUNDARY_0_PRODUCTS, "Case-38"),
-    (data.CART_BOUNDARY_1_PRODUCT, "Case-39"),
+    (data.CART_BOUNDARY_1_PRODUCT,  "Case-39"),
     (data.CART_BOUNDARY_2_PRODUCTS, "Case-39"),
     (data.CART_BOUNDARY_3_PRODUCTS, "Case-39"),
     (data.CART_BOUNDARY_7_PRODUCTS, "Case-40"),
@@ -198,8 +200,88 @@ def test_products_boundary_values(driver, products, case_id):
 def test_case_41_product_added_message_appears(driver):
     # ---Verify when {product} is added to "Cart", the message "{product} is added to cart!" appears. ---
     page = BugHuntShop2Page(driver)
-    page.click_gaming_laptop_from_products_box()
-    notification = page.get_add_to_cart_notification("Gaming Laptop")
+    page.click_tablet_from_products_box()
+    notification = page.get_add_to_cart_notification("Tablet")
     assert notification.is_displayed()
+
+def test_case_42_prod_displayed_in_cart(driver):
+    # ---Verify {product} is displayed in "Shopping Cart". ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    assert "Gaming Laptop" in page.get_cart_item_names()
+
+def test_case_43_prod_price_displayed_correctly(driver):
+    # ---Verify price of {product} displays to the right in the same row. ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    page.click_smartphone_from_products_box()
+    page.click_tablet_from_products_box()
+    prices = page.get_cart_item_prices()
+    assert "$999.99" in prices
+    assert "$599.99" in prices
+    assert "$299.99" in prices
+
+def test_case_44_subtotal_displayed_correctly(driver):
+    # ---Verify "Subtotal" shows base price of product. ---
+    page = BugHuntShop2Page(driver)
+    page.click_tablet_from_products_box()
+    subtotal = page.driver.find_element(*page.SUBTOTAL_SUM_LOCATOR).text.strip()
+    assert subtotal == "299.99"
+
+@pytest.mark.xfail(reason="BHS2-18: Tax calculated as subtotal + 0.085 instead of subtotal * 0.085")
+def test_case_45_sum_of_subtotal_and_tax_correct(driver):
+    # ---Verify SUM of "Subtotal" and "Tax" is correct. ---
+    page = BugHuntShop2Page(driver)
+    page.click_smartphone_from_products_box()
+    subtotal = page.get_subtotal()
+    actual_tax = round(page.get_tax(), 2)
+    expected_sum = round(subtotal + round(subtotal * 0.085, 2), 2)
+    actual_sum = round(subtotal + actual_tax, 2)
+    assert actual_sum == expected_sum
+
+@pytest.mark.xfail(reason="BHS2-18: Total is incorrect due to tax bug(subtotal + 0.085 instead of subtotal * 0.085)")
+def test_case_46_sum_of_subtotal_tax_and_shipping_correct(driver):
+    # ---Verify SUM of "Subtotal", "Tax", and "Shipping" is correct. ---
+    page = BugHuntShop2Page(driver)
+    page.click_gaming_laptop_from_products_box()
+    subtotal = page.get_subtotal()
+    actual_tax = round(page.get_tax(), 2)
+    shipping = round(page.get_shipping(), 2)
+    expected_total = round(subtotal + round(subtotal * 0.085, 2) + shipping, 2)
+    actual_total = round(subtotal + actual_tax + shipping, 2)
+    assert actual_total == expected_total
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

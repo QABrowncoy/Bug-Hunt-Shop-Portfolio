@@ -165,6 +165,16 @@ class BugHuntShop2Page:
     def get_cart_items(self):
         return self.driver.find_elements(By.XPATH, "//div[@id='cartItems']//div[@class='cart-item']")
 
+    def get_cart_item_names(self):
+        """Returns list of product name strings currently in the cart."""
+        items = self.get_cart_items()
+        return [item.find_element(By.XPATH, ".//span[1]").text for item in items]
+
+    def get_cart_item_prices(self):
+        """Returns list of price strings currently in the cart."""
+        items = self.get_cart_items()
+        return [item.find_element(By.XPATH, ".//span[2]").text for item in items]
+
     def get_cart_item_count(self):
         """Returns nummber of items currently in cart."""
         return len(self.get_cart_items())
@@ -179,6 +189,22 @@ class BugHuntShop2Page:
     def get_add_to_cart_notification(self, product_name):
         locator = (By.XPATH, f"//div[contains(text(), '{product_name} added to cart!')]")
         return self.wait.until(EC.visibility_of_element_located(locator))
+
+    def get_subtotal(self):
+        """Returns subtotal as float."""
+        return float(self.wait.until(EC.visibility_of_element_located(self.SUBTOTAL_SUM_LOCATOR)).text.strip())
+
+    def get_tax(self):
+        """Returns tax as float."""
+        return float(self.wait.until(EC.visibility_of_element_located(self.TAX_SUM_LOCATOR)).text.strip())
+
+    def get_shipping(self):
+        """Returns shipping as float."""
+        return float(self.wait.until(EC.visibility_of_element_located(self.SHIPPING_TOTAL_LOCATOR)).text.strip())
+
+    def get_total(self):
+        """Returns total as float."""
+        return float(self.wait.until(EC.visibility_of_element_located(self.FULL_TOTAL_LOCATOR)).text.strip())
 
     def verify_cart_summary_totals(self):
         TAX_RATE = 0.085
