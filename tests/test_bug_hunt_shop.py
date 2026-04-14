@@ -1,6 +1,4 @@
 import pytest
-
-from conftest import driver
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
@@ -197,7 +195,7 @@ def test_case_34_prod_can_be_added_to_cart(driver):
     (data.CART_BOUNDARY_0_PRODUCTS, "Case-35"),
     (data.CART_BOUNDARY_1_PRODUCT,  "Case-36"),
     (data.CART_BOUNDARY_2_PRODUCTS, "Case-36"),
-    (data.CART_BOUNDARY_3_PRODUCTS, "Case-37"),
+    (data.CART_BOUNDARY_3_PRODUCTS, "Case-36"),
     (data.CART_BOUNDARY_7_PRODUCTS, "Case-37"),
 ])
 def test_products_boundary_values(driver, products, case_id):
