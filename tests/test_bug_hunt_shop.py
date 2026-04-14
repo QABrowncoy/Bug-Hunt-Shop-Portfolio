@@ -57,7 +57,7 @@ def test_case_6_empty_search_shows_error(driver):
     page.click_search_button()
     assert page.get_search_error() != ""
 
-# --- Valid character group (Cases 8,9,12,15,16,17,20) ---
+# --- Valid character group (Cases 7,8,11,12,13,14,17) ---
 @pytest.mark.parametrize("term, case_id", [
     (data.SEARCH_VALID_LATIN,            "Case-7"),   # Latin characters
     (data.SEARCH_VALID_DASH,             "Case-8"),   # Dashes/Hyphens
@@ -73,7 +73,7 @@ def test_case_allows_valid_characters(driver, term, case_id):
     page.click_search_button()
     assert page.get_search_error() == ""
 
-# --- Invalid character group (Cases 10,11,18,19,21,22,23) ---
+# --- Invalid character group (Cases 9,10,15,16,18,19,20) ---
 @pytest.mark.parametrize("term, case_id", [
     (data.SEARCH_INVALID_PERIOD,         "Case-9"),    #Periods
     (data.SEARCH_INVALID_COMMA,          "Case-10"),   #Commas
@@ -97,7 +97,7 @@ def test_case_21_invalid_search_shows_not_found_message(driver):
     results = page.driver.find_element(*page.SEARCH_RESULTS_BOX_LOCATOR)
     assert "No products found" in results.text
 
-# --- Boundary value group (Cases 26,27,28) ---
+# --- Boundary value group (Cases 23,24,25) ---
 @pytest.mark.parametrize("term, case_id", [
     (data.SEARCH_BOUNDARY_1_CHAR,     "Case-23"),
     (data.SEARCH_BOUNDARY_2_CHAR,     "Case-23"),
@@ -277,6 +277,7 @@ def test_case_46_clear_cart_button_clickable(driver):
     element = page.wait.until(EC.element_to_be_clickable(page.CLEAR_CART_BUTTON_LOCATOR))
     assert element.is_enabled()
 
+# ---Cases (47,48): Both messages appear at the same time. ---
 def test_case_47_cart_is_empty_message(driver):
     # ---Case-47: Verify "Shopping Cart" displays message "Your cart is empty" when {product} added and "Clear Cart" button clicked. ---
     page = BugHuntShop2Page(driver)
@@ -294,7 +295,33 @@ def test_case_48_cart_cleared_message(driver):
     notification = page.get_cart_cleared_notification()
     assert notification.is_displayed()
 
+# ---Remove Button Boundary Values: (Cases 49,50,51) ---
+@pytest.mark.parametrize("products, case_id",[
+    (data.CART_BOUNDARY_0_PRODUCTS,   "Case-49"), # - Remove button absent
+    (data.CART_BOUNDARY_1_PRODUCT,    "Case-50"), # - Remove button present
+    (data.CART_BOUNDARY_2_PRODUCTS,   "Case-50"), # - Remove button present
+    (data.CART_BOUNDARY_3_PRODUCTS,   "Case-51"), # - Remove button present
+    (data.CART_BOUNDARY_4_PRODUCTS,   "Case-51"), # - Remove button present
+    (data.CART_BOUNDARY_5_PRODUCTS,   "Case-51"), # - Remove button present
+])
+def test_remove_button_boundary_values(driver, products, case_id):
+    page = BugHuntShop2Page(driver)
+    for i in range(products):
+        if i == 0:
+            page.click_tablet_from_products_box()
+        elif i == 1:
+            page.click_gaming_laptop_from_products_box()
+        else:
+            page.click_smartphone_from_products_box()
 
+    remove_buttons = page.get_remove_buttons()
+
+    if case_id == "Case-49":
+        # - Remove button does not appear ---
+        assert len(remove_buttons) == 0
+    elif case_id in ("Case-50", "Case-51"):
+        # - Remove button appears for all products ---
+        assert len(remove_buttons) == products
 
 
 
