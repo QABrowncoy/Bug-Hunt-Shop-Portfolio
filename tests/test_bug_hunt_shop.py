@@ -1,6 +1,5 @@
 import pytest
 
-from conftest import driver
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
