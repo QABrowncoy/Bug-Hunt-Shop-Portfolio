@@ -390,6 +390,10 @@ def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
         f"but the UI displayed ${actual_subtotal}."
     )
 
+# Interview Talking Points:
+# I marked this entire suite as XFAIL because the math logic was fundamentally broken.
+# There were only two specific cases where the bug didn't manifest, so
+# grouping it all as failures made sense when tracking regression.
 @pytest.mark.xfail(reason="BHS2-6, BHS2-7, BHS2-18: Known math logic and total calculations bugs.")
 @pytest.mark.parametrize("products, case_id", [
     (data.CART_BOUNDARY_0_PRODUCTS, "Case-59"),
@@ -408,7 +412,7 @@ def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
 
 def test_cases_59_60_61_cart_financial_congruency(driver, products, case_id):
     # Verifies subtotal, tax, shipping logic and grand total against all identified boundaries.
-    #  Maps Specifically to Jira bugsBHS2-6, 7, 18, 19.
+    # Maps Specifically to Jira bugs BHS2-6, 7, 18, 19.
     page = BugHuntShop2Page(driver)
     page.click_clear_cart_button()
 
@@ -453,8 +457,6 @@ def test_cases_59_60_61_cart_financial_congruency(driver, products, case_id):
     # print(f"\nDEBUG {case_id}: Products: {products} | Expected Total: {expected_total} | Actual UI Total: {actual_total}")
     # Then run this in your terminal:
     # pytest tests/test_bug_hunt_shop.py::test_cases_59_60_61_cart_financial_congruency -s
-
-
 
 
 
