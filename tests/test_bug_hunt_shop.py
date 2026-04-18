@@ -90,11 +90,16 @@ def test_cases_rejects_invalid_characters(driver, term, case_id):
 
 def test_case_21_invalid_search_shows_not_found_message(driver):
     # ---Case-21: Verify invalid input displays "No products found for {invalid input}." message. ---
+    # --- and product grid is empty. ---
     page = BugHuntShop2Page(driver)
-    page.enter_product_search("camera")
+    search_term = "camera"
+    page.enter_product_search(search_term)
     page.click_search_button()
     results = page.driver.find_element(*page.SEARCH_RESULTS_BOX_LOCATOR)
     assert "No products found" in results.text
+    assert f'"{search_term}"' in results.text
+    search_cards = page.get_search_result_cards()
+    assert len(search_cards) == 0, f"Expected 0 search results, but found {len(search_cards)}"
 
 # --- Boundary value group (Cases 23,24,25) ---
 @pytest.mark.parametrize("term, case_id", [
@@ -199,7 +204,7 @@ def test_case_34_prod_can_be_added_to_cart(driver):
     (data.CART_BOUNDARY_3_PRODUCTS, "Case-36"),
     (data.CART_BOUNDARY_7_PRODUCTS, "Case-37"),
 ])
-def test_products_boundary_values(driver, products, case_id):
+def test_cases_35_36_37_products_boundary_values(driver, products, case_id):
     page = BugHuntShop2Page(driver)
     for p in range(products):
         page.click_gaming_laptop_from_products_box()
@@ -303,27 +308,151 @@ def test_case_48_cart_cleared_message(driver):
     (data.CART_BOUNDARY_4_PRODUCTS,   "Case-51"), # - Remove button present
     (data.CART_BOUNDARY_5_PRODUCTS,   "Case-51"), # - Remove button present
 ])
-def test_remove_button_boundary_values(driver, products, case_id):
+def test_cases_49_50_51_remove_button_boundary_values(driver, products, case_id):
     page = BugHuntShop2Page(driver)
     for i in range(products):
         if i == 0:
             page.click_tablet_from_products_box()
         elif i == 1:
             page.click_gaming_laptop_from_products_box()
-        else:
+        elif i >= 2:
             page.click_smartphone_from_products_box()
+        else:
+            raise ValueError(f"Unexpected product index: {i} for {products}) total product")
 
     remove_buttons = page.get_remove_buttons()
 
     if case_id == "Case-49":
         # - Remove button does not appear ---
-        assert len(remove_buttons) == 0
+        assert len(remove_buttons) == 0, f"Expected 0 remove buttons, but found {len(remove_buttons)}"
     elif case_id in ("Case-50", "Case-51"):
         # - Remove button appears for all products ---
-        assert len(remove_buttons) == products
+        assert len(remove_buttons) == products, f"Expected {products} remove buttons, but found {len(remove_buttons)}"
 
+def test_case_52_remove_button_removes_prod(driver):
+    # ---Case-52: Verify clicking "Remove" button removes a {product}. ---
+    page = BugHuntShop2Page(driver)
+    page.click_smartphone_from_products_box()
+    assert page.get_cart_item_count() == 1
+    remove_button = page.wait.until(EC.element_to_be_clickable(page.CLEAR_CART_BUTTON_LOCATOR))
+    remove_button.click()
+    assert page.get_cart_item_count() == 0
 
+def test_case_53_no_price_when_cart_is_empty(driver):
+    page = BugHuntShop2Page(driver)
+    page.click_clear_cart_button()
+    assert page.get_cart_item_count() == 0
+    assert page.get_subtotal() == 0.00
 
+@pytest.mark.xfail(reason="BHS2-4,5: Prices in the cart are not vertically aligned (Layout inconsistency).")
+def test_cases_54_55_correct_vertical_alignment(driver):
+    page = BugHuntShop2Page(driver)
+    # ---Add 1-3 items (Case-54) or > 3 items (Case-55) ---
+    page.click_gaming_laptop_from_products_box()
+    page.click_tablet_from_products_box()
+    prices = page.get_cart_item_prices()
+    first_price_x = prices[0].location['x']
+    for price in prices:
+        actual_x = price.location['x']
+        # --- This assertion will fail because of the staggered look on the page. ---
+        assert actual_x == first_price_x, f"Price at {price.text} is at X:{actual_x}, expected X:{first_price_x}"
+
+# ---Subtotal Correct Boundary Values: (Cases 56,57,58) ---
+@pytest.mark.parametrize("products, case_id", [
+    (data.CART_BOUNDARY_0_PRODUCTS, "Case-56"),
+    (data.CART_BOUNDARY_2_PRODUCTS, "Case-57"),
+    (data.CART_BOUNDARY_3_PRODUCTS, "Case-57"),
+    (data.CART_BOUNDARY_6_PRODUCTS, "Case-58"),
+    (data.CART_BOUNDARY_7_PRODUCTS, "Case-58"),
+    (data.CART_BOUNDARY_8_PRODUCTS, "Case-58"),
+])
+def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
+    page = BugHuntShop2Page(driver)
+    page.click_clear_cart_button()
+    for p in range(products):
+        if p == 0:
+            page.click_smartphone_from_products_box()
+        elif p == 1:
+            page.click_gaming_laptop_from_products_box()
+        else:
+            page.click_tablet_from_products_box()
+
+    expected_val = 0.0
+    if products >= 1:expected_val += 599.99
+    if products >= 2:expected_val += 999.99
+    if products > 2: expected_val += (products - 2) * 299.99
+
+    expected_val = round(expected_val, 2)
+
+    actual_subtotal = page.get_subtotal()
+    assert actual_subtotal == expected_val, (
+        f"Failed {case_id}: Expected subtotal to be ${expected_val}, "
+        f"but the UI displayed ${actual_subtotal}."
+    )
+
+@pytest.mark.xfail(reason="BHS2-6, BHS2-7, BHS2-18: Known math logic and total calculations bugs.")
+@pytest.mark.parametrize("products, case_id", [
+    (data.CART_BOUNDARY_0_PRODUCTS, "Case-59"),
+    (data.CART_BOUNDARY_0_PRODUCTS, "Case-62"),
+    (data.CART_BOUNDARY_1_PRODUCT,  "Case-60"),
+    (data.CART_BOUNDARY_1_PRODUCT,  "Case-63"),
+    (data.CART_BOUNDARY_2_PRODUCTS, "Case-60"),
+    (data.CART_BOUNDARY_2_PRODUCTS, "Case-63"),
+    (data.CART_BOUNDARY_3_PRODUCTS, "Case-64"),
+    (data.CART_BOUNDARY_4_PRODUCTS, "Case-61"),
+    (data.CART_BOUNDARY_4_PRODUCTS, "Case-64"),
+    (data.CART_BOUNDARY_5_PRODUCTS, "Case-61"),
+    (data.CART_BOUNDARY_5_PRODUCTS, "Case-64"),
+    (data.CART_BOUNDARY_6_PRODUCTS, "Case-61"),
+])
+
+def test_cases_59_60_61_cart_financial_congruency(driver, products, case_id):
+    # Verifies subtotal, tax, shipping logic and grand total against all identified boundaries.
+    #  Maps Specifically to Jira bugsBHS2-6, 7, 18, 19.
+    page = BugHuntShop2Page(driver)
+    page.click_clear_cart_button()
+
+    # Add products based on parametrization
+    for p in range(products):
+        if p == 0:
+            page.click_gaming_laptop_from_products_box()
+        elif p == 1:
+            page.click_tablet_from_products_box()
+        else:
+            page.click_smartphone_from_products_box()
+
+    # Expected Math Logic
+    expected_subtotal = 0.0
+    if products >= 1: expected_subtotal += 999.99
+    if products >= 2: expected_subtotal += 299.99
+    if products > 2:  expected_subtotal += (products - 2) * 599.99
+    expected_subtotal = round(expected_subtotal, 2)
+
+    # Business Rules: 8.5% Tax, $5.99 Shipping
+    tax_rate = 0.085
+    shipping_rate = 5.99 if products > 0 else 0.0
+
+    expected_tax = round(expected_subtotal * tax_rate, 2)
+    expected_total = round(expected_subtotal + expected_tax + shipping_rate, 2)
+
+    # Capture Actual UI Values
+    actual_subtotal = page.get_subtotal()
+    actual_total = page.get_total()
+
+    # Assertions
+    # Note: If math bugs exist in the UI, these will trigger the XFAIL
+    assert actual_subtotal == expected_subtotal, f"{case_id}: Subtotal mismatch"
+    assert actual_total == expected_total, f"{case_id}: Grand Total mismatch"
+
+    # In case you get "XPASS" instead of "XFAIL"
+    # How to Investigate: The "Loud" Test
+    # To see exactly why it is passing, we need to see the numbers.
+    # Run the test again with the -s flag in your PyCharm terminal. This allows the print statements to show up in the console.
+    #
+    # Add this line right before your assertions:
+    # print(f"\nDEBUG {case_id}: Products: {products} | Expected Total: {expected_total} | Actual UI Total: {actual_total}")
+    # Then run this in your terminal:
+    # pytest tests/test_bug_hunt_shop.py::test_cases_59_60_61_cart_financial_congruency -s
 
 
 

@@ -89,6 +89,11 @@ class BugHuntShop2Page:
         except TimeoutException:
             print("No buttons present")
 
+    def get_search_result_cards(self):
+        """Returns only product card elements found within the search results box."""
+        # ---This specificallytargets cards inside the searchResults div ---
+        return self.driver.find_elements(By.XPATH, "//div[@id='searchResults']//div[@class='product-card']")
+
     def click_gaming_laptop_from_products_box(self):
         element = self.wait.until(EC.element_to_be_clickable(self.GAMING_LAPTOP_BUTTON_LOCATOR))
         element.click()
@@ -171,9 +176,9 @@ class BugHuntShop2Page:
         return [item.find_element(By.XPATH, ".//span[1]").text for item in items]
 
     def get_cart_item_prices(self):
-        """Returns list of price strings currently in the cart."""
+        """Returns list of WebElements for the prices currently in the cart."""
         items = self.get_cart_items()
-        return [item.find_element(By.XPATH, ".//span[2]").text for item in items]
+        return [item.find_element(By.XPATH, ".//span[2]") for item in items]
 
     def get_cart_item_count(self):
         """Returns nummber of items currently in cart."""
