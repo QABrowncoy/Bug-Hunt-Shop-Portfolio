@@ -309,6 +309,7 @@ def test_case_48_cart_cleared_message(driver):
     (data.CART_BOUNDARY_5_PRODUCTS,   "Case-51"), # - Remove button present
 ])
 def test_cases_49_50_51_remove_button_boundary_values(driver, products, case_id):
+    # ---Cases 49,50,51: Verify remove button appears with or without products. ---
     page = BugHuntShop2Page(driver)
     for i in range(products):
         if i == 0:
@@ -338,6 +339,7 @@ def test_case_52_remove_button_removes_prod(driver):
     assert page.get_cart_item_count() == 0
 
 def test_case_53_no_price_when_cart_is_empty(driver):
+    # ---Case-53: Verify when < 1 product is in "Shopping Cart", no price is displayed. ---
     page = BugHuntShop2Page(driver)
     page.click_clear_cart_button()
     assert page.get_cart_item_count() == 0
@@ -345,11 +347,12 @@ def test_case_53_no_price_when_cart_is_empty(driver):
 
 @pytest.mark.xfail(reason="BHS2-4,5: Prices in the cart are not vertically aligned (Layout inconsistency).")
 def test_cases_54_55_correct_vertical_alignment(driver):
+    # ---Cases 54,55: Verify when products added to "Shopping Cart", prices are vertically aligned correctly. ---
     page = BugHuntShop2Page(driver)
     # ---Add 1-3 items (Case-54) or > 3 items (Case-55) ---
     page.click_gaming_laptop_from_products_box()
     page.click_tablet_from_products_box()
-    prices = page.get_cart_item_prices()
+    prices = page.get_cart_item_price_elements()
     first_price_x = prices[0].location['x']
     for price in prices:
         actual_x = price.location['x']
@@ -400,7 +403,6 @@ def test_case_59_no_product_and_tax_sum(driver):
 def test_case_62_grand_total_with_no_product(driver):
     # ---Case-62: Verify with < 1 product, "Total" equals correct SUM of "Subtotal", "Tax", & "Shipping". ---
     page = BugHuntShop2Page(driver)
-    page.click_clear_cart_button()
     actual_ui_total = page.get_total()
     assert actual_ui_total == 0.00, f"Expected 0.00, but UI showed {actual_ui_total}."
 
@@ -469,30 +471,5 @@ def test_cases_60_61_63_64_cart_financial_congruency(driver, products, case_id):
     # print(f"\nDEBUG {case_id}: Products: {products} | Expected Total: {expected_total} | Actual UI Total: {actual_total}")
     # Then run this in your terminal:
     # pytest tests/test_bug_hunt_shop.py::test_cases_59_60_61_cart_financial_congruency -s
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

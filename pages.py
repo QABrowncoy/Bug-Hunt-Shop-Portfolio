@@ -2,6 +2,7 @@ from secrets import token_urlsafe
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.expected_conditions import presence_of_all_elements_located
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.support.ui import Select
@@ -180,6 +181,16 @@ class BugHuntShop2Page:
         items = self.get_cart_items()
         return [item.find_element(By.XPATH, ".//span[2]").text for item in items]
 
+    def get_cart_item_prices_as_floats(self):
+        """Returns a list of floats for math calculations."""
+        elements = self.wait.until(EC.presence_of_all_elements_located(self.CART_ITEM_PRICES_LOCATOR))
+        return [float(elements.text.replace('$', '')) for element in elements]
+
+    def get_cart_item_price_elements(self):
+        """Returns the raw list of WebElements for UI/Alignment checks"""
+        return self.wait.until(EC.visibility_of_all_elements_located(self.CART_ITEM_PRICES_LOCATOR))
+        message="Timed out waiting for cart price elements to appear."
+
     def get_cart_item_count(self):
         """Returns nummber of items currently in cart."""
         return len(self.get_cart_items())
@@ -255,53 +266,29 @@ class BugHuntShop2Page:
             "shipping": {"expected": expected_shipping, "actual": actual_shipping,    "pass": expected_shipping == actual_shipping},
             "total": {"expected": expected_total,       "actual": actual_total,       "pass": expected_total == actual_total},
         }
-    def cont_us_name(self,name_text):
+    def fill_contact_us_fields(self, locator, text):
+        """Internal helper to handle the wait/clear/send_keys logic."""
         try:
-            element = self.wait.until(EC.presence_of_element_located(self.NAME_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(self.NAME_LOCATOR))
+            element = self.wait.until(EC.element_to_be_clickable(locator))
             element.clear()
-            element.send_keys(name_text)
+            element.send_keys(text)
         except:
-            element = self.driver.find_element(*self.NAME_LOCATOR)
+            element = self.driver.find_element(*locator)
             self.driver.execute_script("arguments[0].click();", element)
             element.clear()
-            element.send_keys(name_text)
+            element.send_keys(text)
+
+    def cont_us_name(self,name_text):
+        self.fill_contact_us_fields(self.NAME_LOCATOR, name_text)
 
     def cont_us_email(self,email_text):
-        try:
-            element = self.wait.until(EC.presence_of_element_located(self.EMAIL_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(self.EMAIL_LOCATOR))
-            element.clear()
-            element.send_keys(email_text)
-        except:
-            element = self.driver.find_element(*self.EMAIL_LOCATOR)
-            self.driver.execute_script("arguments[0].click();", element)
-            element.clear()
-            element.send_keys(email_text)
+        self.fill_contact_us_fields(self.EMAIL_LOCATOR, email_text)
 
     def cont_us_phone(self,phone_text):
-        try:
-            element = self.wait.until(EC.presence_of_element_located(self.PHONE_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(self.PHONE_LOCATOR))
-            element.clear()
-            element.send_keys(phone_text)
-        except:
-            element = self.driver.find_element(*self.PHONE_LOCATOR)
-            self.driver.execute_script("arguments[0].click();", element)
-            element.clear()
-            element.send_keys(phone_text)
+        self.fill_contact_us_fields(self.PHONE_LOCATOR, phone_text)
 
     def cont_us_message(self,message_text):
-        try:
-            element = self.wait.until(EC.presence_of_element_located(self.MESSAGE_LOCATOR))
-            element = self.wait.until(EC.element_to_be_clickable(self.MESSAGE_LOCATOR))
-            element.clear()
-            element.send_keys(message_text)
-        except:
-            element = self.driver.find_element(*self.MESSAGE_LOCATOR)
-            self.driver.execute_script("arguments[0].click();", element)
-            element.clear()
-            element.send_keys(message_text)
+        self.fill_contact_us_fields(self.MESSAGE_LOCATOR, message_text)
 
     def click_send_message_button(self):
         element = self.wait.until(EC.element_to_be_clickable(self.SEND_MESSAGE_BUTTON_LOCATOR))
