@@ -178,7 +178,7 @@ class BugHuntShop2Page:
     def get_cart_item_prices(self):
         """Returns list of WebElements for the prices currently in the cart."""
         items = self.get_cart_items()
-        return [item.find_element(By.XPATH, ".//span[2]") for item in items]
+        return [item.find_element(By.XPATH, ".//span[2]").text for item in items]
 
     def get_cart_item_count(self):
         """Returns nummber of items currently in cart."""
@@ -213,8 +213,10 @@ class BugHuntShop2Page:
         return float(self.wait.until(EC.visibility_of_element_located(self.SHIPPING_TOTAL_LOCATOR)).text.strip())
 
     def get_total(self):
-        """Returns total as float."""
-        return float(self.wait.until(EC.visibility_of_element_located(self.FULL_TOTAL_LOCATOR)).text.strip())
+        """Returns total as float, handling currency symbols and whitespace."""
+        element_text = self.wait.until(EC.visibility_of_element_located(self.FULL_TOTAL_LOCATOR)).text
+        clean_text = element_text.strip().replace("$", "").replace(",", "").strip()
+        return float(clean_text)
 
     def verify_cart_summary_totals(self):
         TAX_RATE = 0.085

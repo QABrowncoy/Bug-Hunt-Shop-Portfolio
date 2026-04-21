@@ -334,8 +334,7 @@ def test_case_52_remove_button_removes_prod(driver):
     page = BugHuntShop2Page(driver)
     page.click_smartphone_from_products_box()
     assert page.get_cart_item_count() == 1
-    remove_button = page.wait.until(EC.element_to_be_clickable(page.CLEAR_CART_BUTTON_LOCATOR))
-    remove_button.click()
+    page.shop_cart_result_cleared("Smartphone")
     assert page.get_cart_item_count() == 0
 
 def test_case_53_no_price_when_cart_is_empty(driver):
@@ -390,14 +389,27 @@ def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
         f"but the UI displayed ${actual_subtotal}."
     )
 
+def test_case_59_no_product_and_tax_sum(driver):
+    # ---Case-59: Verify the SUM of < 1 products and "Tax" is correct. ---
+    page = BugHuntShop2Page(driver)
+    subtotal = page.get_subtotal()
+    tax = page.get_tax()
+    assert round(subtotal + tax, 2) == 0.00
+
+@pytest.mark.xfail(reason="BHS2-19: Shipping/Total does not reset to 0.00 on empty cart.")
+def test_case_62_grand_total_with_no_product(driver):
+    # ---Case-62: Verify with < 1 product, "Total" equals correct SUM of "Subtotal", "Tax", & "Shipping". ---
+    page = BugHuntShop2Page(driver)
+    page.click_clear_cart_button()
+    actual_ui_total = page.get_total()
+    assert actual_ui_total == 0.00, f"Expected 0.00, but UI showed {actual_ui_total}."
+
 # Interview Talking Points:
 # I marked this entire suite as XFAIL because the math logic was fundamentally broken.
 # There were only two specific cases where the bug didn't manifest, so
 # grouping it all as failures made sense when tracking regression.
 @pytest.mark.xfail(reason="BHS2-6, BHS2-7, BHS2-18: Known math logic and total calculations bugs.")
 @pytest.mark.parametrize("products, case_id", [
-    (data.CART_BOUNDARY_0_PRODUCTS, "Case-59"),
-    (data.CART_BOUNDARY_0_PRODUCTS, "Case-62"),
     (data.CART_BOUNDARY_1_PRODUCT,  "Case-60"),
     (data.CART_BOUNDARY_1_PRODUCT,  "Case-63"),
     (data.CART_BOUNDARY_2_PRODUCTS, "Case-60"),
@@ -410,7 +422,7 @@ def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
     (data.CART_BOUNDARY_6_PRODUCTS, "Case-61"),
 ])
 
-def test_cases_59_60_61_cart_financial_congruency(driver, products, case_id):
+def test_cases_60_61_63_64_cart_financial_congruency(driver, products, case_id):
     # Verifies subtotal, tax, shipping logic and grand total against all identified boundaries.
     # Maps Specifically to Jira bugs BHS2-6, 7, 18, 19.
     page = BugHuntShop2Page(driver)
