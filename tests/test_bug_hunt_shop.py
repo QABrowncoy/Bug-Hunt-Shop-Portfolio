@@ -1,5 +1,4 @@
 import pytest
-
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
@@ -369,6 +368,7 @@ def test_cases_54_55_correct_vertical_alignment(driver):
     (data.CART_BOUNDARY_8_PRODUCTS, "Case-58"),
 ])
 def test_cases_56_57_58_correct_subtotal(driver, products, case_id):
+    # ---Cases 56,57,58: Verify when product added to "Shopping Cart" or not, "Subtotal" is correct. ---
     page = BugHuntShop2Page(driver)
     page.click_clear_cart_button()
     for p in range(products):
@@ -425,6 +425,7 @@ def test_case_62_grand_total_with_no_product(driver):
 ])
 
 def test_cases_60_61_63_64_cart_financial_congruency(driver, products, case_id):
+    # ---Cases 60,61,63,64:
     # Verifies subtotal, tax, shipping logic and grand total against all identified boundaries.
     # Maps Specifically to Jira bugs BHS2-6, 7, 18, 19.
     page = BugHuntShop2Page(driver)
@@ -472,4 +473,26 @@ def test_cases_60_61_63_64_cart_financial_congruency(driver, products, case_id):
     # Then run this in your terminal:
     # pytest tests/test_bug_hunt_shop.py::test_cases_59_60_61_cart_financial_congruency -s
 
+def test_case_65_name_field_visible(driver):
+    # ---Case-65: Verify "Name" field is visible and displayed correctly. ---
+    page = BugHuntShop2Page(driver)
+    element = page.wait.until(EC.presence_of_element_located(page.NAME_LOCATOR))
+    assert element.is_displayed()
+
+def test_case_66_name_field_in_focus(driver):
+    # ---Case-66: Verify when clicking in the "Name" field, it is in focus and cursor appears. ---
+    page = BugHuntShop2Page(driver)
+    element = page.wait.until(EC.element_to_be_clickable(page.NAME_LOCATOR))
+    element.click()
+    active_element = driver.switch_to.active_element
+    assert active_element.get_attribute("id") == "name", "Focus failed: Name field is not the active element."
+
+def test_case_67_name_field_out_of_focus(driver):
+    # ---Case-67: Verify when clicking outside the "name" field, it comes out of focus
+    # ---and cursor disappears from field. ---
+    page = BugHuntShop2Page(driver)
+    element = page.wait.until(EC.element_to_be_clickable(page.NAME_LOCATOR))
+    element.click()
+    send_message_button = page.wait.until(EC.element_to_be_clickable(page.SEND_MESSAGE_BUTTON_LOCATOR))
+    assert send_message_button.get_attribute("id") != "name", "Case-67 Fail: Name field should not be in focus."
 
