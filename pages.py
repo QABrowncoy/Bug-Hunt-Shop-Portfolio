@@ -266,6 +266,38 @@ class BugHuntShop2Page:
             "shipping": {"expected": expected_shipping, "actual": actual_shipping,    "pass": expected_shipping == actual_shipping},
             "total": {"expected": expected_total,       "actual": actual_total,       "pass": expected_total == actual_total},
         }
+    def scroll_to_contact_and_verify_empty(self):
+        """
+        Scrolls to the Contact section and verifies all fields are empty.
+        Uses IDs: name, email, phone, message from enhanced-index.html.
+        """
+        contact_section = self.wait.until(EC.presence_of_element_located((By.ID, "contact")))
+        self.driver.execute_script("arguments[0].click();", contact_section)
+        field_ids = ["name", "email", "phone", "message"]
+        for ids in field_ids:
+            element = self.driver.find_element(By.ID, ids)
+            value = element.get_attribute("value")
+            assert value == "", f"Error: Field '{ids} should be empty but found '{value}'"
+
+    def get_contact_validation_errors(self):
+        """
+        Finds all active messages in the contact form.
+        Returns a list of text strings from the .error-message divs.
+        """
+        # Your script creates <div class="error-message"> elements ---
+        errors = self.driver.find_elements(By.CLASS_NAME, "error-message")
+        return [error.text for error in errors if error.is_displayed()]
+
+    def get_browser_validation_message(self, field_id):
+        """
+         Retrieves the HTML5 validation message (e.g., 'Please fill out this filed').
+         Verified against enhanced-index.html where the required attribute is present.
+        """
+        # Find the element by the ID passed from the test (e.g., 'name')
+        element = self.driver.find_element(By.ID, field_id)
+        # .get_property("validationMessage") is the secret to reading the browser tooltips
+        return element.get_property("validationMessage")
+
     def fill_contact_us_fields(self, locator, text):
         """Internal helper to handle the wait/clear/send_keys logic."""
         try:

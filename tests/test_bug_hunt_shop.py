@@ -496,3 +496,43 @@ def test_case_67_name_field_out_of_focus(driver):
     send_message_button = page.wait.until(EC.element_to_be_clickable(page.SEND_MESSAGE_BUTTON_LOCATOR))
     assert send_message_button.get_attribute("id") != "name", "Case-67 Fail: Name field should not be in focus."
 
+@pytest.mark.xfail(reason="BUG #16: Name field is required in HTML but validation fails to trigger.")
+def test_case_68_no_input_in_fields_result_error_message(driver):
+    # ---Case-68: Verify when all fields empty, and "Send Message" button is pressed, ---
+    # --- the message "Please fill out this field" appears. ---
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.click_send_message_button()
+
+    # 1. Check Browser Validation (This part will PASS)
+    browser_msg = page.get_browser_validation_message("name")
+    assert "please fill out this field" in browser_msg.lower()
+
+    # 2. Check Custom JS Validation (This part is where BUG #16 likely fails)
+    # Your JS should create a <div class="error-message">Name is required</div>
+    js_errors = page.get_contact_validation_errors()
+    assert "Name is required" in js_errors, "BUG #16: HTML5 worked, but custom js error div is missing!"
+
+# --- To use as a tool, if this were bug free, this is how it would look... ---
+# def test_case_68_all_fields_empty_validation(driver):
+#   page = BugHuntShop2Page(driver)
+#   page.scroll_to_contact_and_verify_empty()
+#   page.click_send_message()
+
+#   - Standard Master List of what we are supposed to see
+#   expected_errors = {
+#        "name": "Name is required",
+#        "email": "Email is required",
+#        "phone": "Phone is required"
+#   }
+#   for field_id, expected_errors in expected_errors.items():
+#       - Check browser layer (Custom JS)
+#       browser_msg = page.get_browser_validation_message(field_id)
+#       assert "fill out" in browser_msg()
+#       - Check App Layer (Custom JS)
+#       - In a bug-free app, your js_errors list would NOT be empty
+#       actual_js_errors = page.contact_validation_errors()
+#       assert expected_errors in actual_js_errors
+
+
+
