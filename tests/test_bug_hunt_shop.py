@@ -519,20 +519,47 @@ def test_case_68_no_input_in_fields_result_error_message(driver):
 #   page.scroll_to_contact_and_verify_empty()
 #   page.click_send_message()
 
-#   - Standard Master List of what we are supposed to see
+#   # Standard Master List of what we are supposed to see
 #   expected_errors = {
 #        "name": "Name is required",
 #        "email": "Email is required",
 #        "phone": "Phone is required"
 #   }
-#   for field_id, expected_errors in expected_errors.items():
-#       - Check browser layer (Custom JS)
-#       browser_msg = page.get_browser_validation_message(field_id)
-#       assert "fill out" in browser_msg()
-#       - Check App Layer (Custom JS)
-#       - In a bug-free app, your js_errors list would NOT be empty
+#   for field_id, expected_text in expected_errors.items():
+#       # Check browser layer (Custom JS)
+#       browser_validation_message = page.get_browser_validation_message(field_id)
+#       assert "fill out" in browser_validation_message
+#
+#       # Check App Layer (Custom JS)
 #       actual_js_errors = page.contact_validation_errors()
 #       assert expected_errors in actual_js_errors
 
+@pytest.mark.xfail(reason="BUG #16: JS 'Name is required' message fails to trigger even when other fields are valid.")
+def test_case_69_no_name_field_isolation(driver):
+    # Case-69: Isolate the name field to test custom JS validation persistence ---
+    page = BugHuntShop2Page(driver)
 
+    # 1. Setup: Scroll to the form
+    page.scroll_to_contact_and_verify_empty()
+
+    # 2. Action: Leave Name empty, but fill out Email, Phone, and Message
+    # This prevents other browser 'required' tooltips from interfering
+    page.cont_us_email("tester@bug-hunt.com")
+    page.cont_us_phone("2144219184")
+    page.cont_us_message("Validating that the custom Name error is missing.")
+
+    # 3. Action: CLick Send
+    page.click_send_message_button()
+
+    # 4. Verification Part A: The Browser Safety Net
+    # This is the 'vanishing' tooltip you observed
+    browser_msg = page.get_browser_validation_message("name")
+    assert "please fill out this field" in browser_msg.lower()
+
+    # 5. Verification Part B: THe Custom JS Bug (The Real Portfolio Value)
+    # We check the .error-message divs that SHOULD be injected by your JS
+    js_errors = page.get_contact_validation_errors()
+
+    # Based on your observation, this will fail because the list is empty []
+    assert "Name is required" in js_errors, "BUG #16: Persistent JS error message is missing!"
 
