@@ -38,10 +38,12 @@ CART_BOUNDARY_7_PRODUCTS = 7
 CART_BOUNDARY_8_PRODUCTS = 8
 
 # ========== CONTACT - NAME ==========
-VALID_NAME = "AnaMarie"
+VALID_NAME_LATIN = "Ana"
 VALID_NAME_DASH = "Ana-Marie"
 VALID_NAME_APOSTROPHE = "Ana'Marie"
-VALID_NAME_SPACE = "Ana Marie"
+VALID_NAME_SPACE_BETWEEN = "Ana Marie"
+VALID_NAME_SPACE_BEFORE = " AnaMarie"
+VALID_NAME_SPACE_AFTER = "AnaMarie "
 VALID_NAME_8_CHAR = "AnaMarie"
 VALID_NAME_40_CHAR = "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
 VALID_NAME_73_CHAR = "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieA"

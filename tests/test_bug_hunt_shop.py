@@ -563,3 +563,14 @@ def test_case_69_no_name_field_isolation(driver):
     # Based on your observation, this will fail because the list is empty []
     assert "Name is required" in js_errors, "BUG #16: Persistent JS error message is missing!"
 
+# --- Valid character group (Cases 70,71,74,75(a,b,c) ---
+@pytest.mark.parametrize("input_name, case_id", [
+    (data.VALID_NAME_LATIN,            "Case-70"),
+    (data.VALID_NAME_DASH,             "Case-71"),
+    (data.VALID_NAME_APOSTROPHE,       "Case-74"),
+    (data.VALID_NAME_SPACE_BETWEEN,    "Case-75a"),
+    (data.VALID_NAME_SPACE_BEFORE,     "Case-75b"),
+    (data.VLAID_NAME_SPACE_AFTER,      "Case-75c"),
+])
+
+def test_name_field_valid_characters()
