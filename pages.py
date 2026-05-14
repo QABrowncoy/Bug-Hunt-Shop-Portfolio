@@ -48,6 +48,9 @@ class BugHuntShop2Page:
         self.wait = WebDriverWait(driver, 10)
         self.driver = driver
 
+    def get_active_element_id(self):
+        return self.driver.switch_to.active_element.get_attribute("id")
+
     def enter_product_search(self, search_input):
         try:
             element = self.wait.until(EC.presence_of_element_located(self.PROD_SEAR_FIELD_LOCATOR))
@@ -278,6 +281,39 @@ class BugHuntShop2Page:
             element = self.driver.find_element(By.ID, ids)
             value = element.get_attribute("value")
             assert value == "", f"Error: Field '{ids} should be empty but found '{value}'"
+
+    def is_field_valid(self, field_id):
+        """Returns True if the browser considers the field valid, False otherwise."""
+        element = self.driver.find_element(By.ID, field_id)
+        return element.get_property("validity")["valid"]
+
+    def is_name_field_visible(self):
+        """Verifies if the name field is visible on the screen."""
+        return self.wait.until(EC.visibility_of_element_located(self.NAME_LOCATOR)).is_displayed()
+
+    def focus_name_field(self):
+        self.wait.until(EC.element_to_be_clickable(self.NAME_LOCATOR)).click()
+
+    def is_email_field_visible(self):
+        """Verifies if the email field is visible on the screen."""
+        return self.wait.until(EC.visibility_of_element_located(self.EMAIL_LOCATOR)).is_displayed()
+
+    def focus_email_field(self):
+        self.wait.until(EC.element_to_be_clickable(self.EMAIL_LOCATOR)).click()
+
+    def is_phone_field_visible(self):
+        """Verifies if the phone field is visible on the screen."""
+        return self.wait.until(EC.visibility_of_element_located(self.PHONE_LOCATOR)).is_displayed()
+
+    def focus_phone_field(self):
+        self.wait.until(EC.element_to_be_clickable(self.PHONE_LOCATOR)).click()
+
+    def is_message_field_visible(self):
+        """Verifies if the message field is visible on the screen."""
+        return self.wait.until(EC.visibility_of_element_located(self.MESSAGE_LOCATOR)).is_displayed()
+
+    def focus_message_field(self):
+        self.wait.until(EC.element_to_be_clickable(self.MESSAGE_LOCATOR)).click()
 
     def get_contact_validation_errors(self):
         """

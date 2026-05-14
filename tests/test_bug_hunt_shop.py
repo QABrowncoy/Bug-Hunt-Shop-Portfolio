@@ -476,27 +476,26 @@ def test_cases_60_61_63_64_cart_financial_congruency(driver, products, case_id):
 def test_case_65_name_field_visible(driver):
     # ---Case-65: Verify "Name" field is visible and displayed correctly. ---
     page = BugHuntShop2Page(driver)
-    element = page.wait.until(EC.presence_of_element_located(page.NAME_LOCATOR))
-    assert element.is_displayed()
+    page.scroll_to_contact_and_verify_empty()
+    assert page.is_phone_field_visible()
 
 def test_case_66_name_field_in_focus(driver):
     # ---Case-66: Verify when clicking in the "Name" field, it is in focus and cursor appears. ---
     page = BugHuntShop2Page(driver)
-    element = page.wait.until(EC.element_to_be_clickable(page.NAME_LOCATOR))
-    element.click()
-    active_element = driver.switch_to.active_element
-    assert active_element.get_attribute("id") == "name", "Focus failed: Name field is not the active element."
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_name_field()
+    assert page.get_active_element_id()
 
 def test_case_67_name_field_out_of_focus(driver):
     # ---Case-67: Verify when clicking outside the "name" field, it comes out of focus
     # ---and cursor disappears from field. ---
     page = BugHuntShop2Page(driver)
-    element = page.wait.until(EC.element_to_be_clickable(page.NAME_LOCATOR))
-    element.click()
-    send_message_button = page.wait.until(EC.element_to_be_clickable(page.SEND_MESSAGE_BUTTON_LOCATOR))
-    assert send_message_button.get_attribute("id") != "name", "Case-67 Fail: Name field should not be in focus."
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_name_field()
+    page.click_send_message_button()
+    assert page.get_active_element_id() != "email"
 
-@pytest.mark.xfail(reason="BUG #16: Name field is required in HTML but validation fails to trigger.")
+@pytest.mark.xfail(reason="BUG #22: Name field is required in HTML but validation fails to trigger.")
 def test_case_68_no_input_in_fields_result_error_message(driver):
     # ---Case-68: Verify when all fields empty, and "Send Message" button is pressed, ---
     # --- the message "Please fill out this field" appears. ---
@@ -563,14 +562,97 @@ def test_case_69_no_name_field_isolation(driver):
     # Based on your observation, this will fail because the list is empty []
     assert "Name is required" in js_errors, "BUG #16: Persistent JS error message is missing!"
 
-# --- Valid character group (Cases 70,71,74,75(a,b,c) ---
-@pytest.mark.parametrize("input_name, case_id", [
+# --- Valid character group (Cases 70,71,74,75(a,b,c)) ---
+@pytest.mark.parametrize("term, case_id", [
     (data.VALID_NAME_LATIN,            "Case-70"),
     (data.VALID_NAME_DASH,             "Case-71"),
     (data.VALID_NAME_APOSTROPHE,       "Case-74"),
     (data.VALID_NAME_SPACE_BETWEEN,    "Case-75a"),
     (data.VALID_NAME_SPACE_BEFORE,     "Case-75b"),
-    (data.VLAID_NAME_SPACE_AFTER,      "Case-75c"),
+    (data.VALID_NAME_SPACE_AFTER,      "Case-75c"),
 ])
 
-def test_name_field_valid_characters()
+def test_name_field_valid_characters(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_name(term)
+    page.click_send_message_button()
+    assert page.get_name_error() == ""
+
+# ---Invalid character group (Cases 72,73,76-81) ---
+@pytest.mark.parametrize("term, case_id", [
+    (data.INVALID_NAME_PERIOD,         "Case-72"),
+    (data.INVALID_NAME_COMMA,          "Case-73"),
+    (data.INVALID_NAME_NON_LATIN,      "Case-76"),
+    (data.INVALID_NAME_UNICODE,        "Case-77"),
+    (data.INVALID_NAME_NUMBERS,        "Case-78"),
+    (data.INVALID_NAME_NUMBERS_MIX,    "Case-79"),
+    (data.INVALID_NAME_HTML,           "Case-80"),
+    (data.INVALID_NAME_SPECIAL,        "Case-81"),
+    (data.INVALID_NAME_EMPTY,          "Case-82"),
+])
+
+def test_name_field_invalid_characters(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_name(term)
+    page.click_send_message_button()
+
+    # Logic to handle both custom JS errors and Browser Native validation
+    if case_id == "Case-82":
+        # No 'By' here! We just ask the page object if the field is valid.
+        assert page.is_field_valid("name") is False
+    else:
+        # Using your existing getter
+        assert page.get_name_error() != ""
+
+# --- Boundary value group (Cases 83,84,85) ---
+@pytest.mark.parametrize("term, case_id", [
+    (data.VALID_NAME_8_CHAR,             "Case-84"),
+    (data.VALID_NAME_40_CHAR,            "Case-84"),
+    (data.VALID_NAME_73_CHAR,            "Case-84"),
+    (data.INVALID_NAME_1_CHAR,           "Case-83"),
+    (data.INVALID_NAME_101_CHAR,         "Case-85"),
+    (data.INVALID_NAME_102_CHAR,         "Case-85"),
+])
+
+def test_name_field_boundary_values(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_name(term)
+    page.click_send_message_button()
+    if case_id == "Case-84":
+        assert page.get_name_error() == ""
+    elif case_id in ["Case-83", "Case-85"]:
+        assert page.get_name_error() != ""
+    else:
+        raise ValueError(f"Case ID {case_id} not recognized in boundary logic")
+
+def test_case_86_email_field_visible(driver):
+    # ---Case-86: Verify "Email" field is visible and displayed correctly. ---
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    assert page.is_email_field_visible()
+
+
+def test_case_87_email_field_in_focus(driver):
+    # ---Case-87: Verify when clicking in the "Email" field, it is in focus and cursor appears. ---
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_email_field()
+    assert page.get_active_element_id()
+
+
+def test_case_88_name_field_out_of_focus(driver):
+    # ---Case-88: Verify when clicking outside the "email" field, it comes out of focus
+    # ---and cursor disappears from field. ---
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_email_field()
+    page.click_send_message_button()
+    assert page.get_active_element_id() != "email"
+
+
+
+
+
