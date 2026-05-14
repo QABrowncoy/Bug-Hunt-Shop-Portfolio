@@ -495,7 +495,7 @@ def test_case_67_name_field_out_of_focus(driver):
     page.click_send_message_button()
     assert page.get_active_element_id() != "email"
 
-@pytest.mark.xfail(reason="BUG #22: Name field is required in HTML but validation fails to trigger.")
+@pytest.mark.xfail(reason="BHS2-22: Name field is required in HTML but validation fails to trigger.")
 def test_case_68_no_input_in_fields_result_error_message(driver):
     # ---Case-68: Verify when all fields empty, and "Send Message" button is pressed, ---
     # --- the message "Please fill out this field" appears. ---
@@ -510,7 +510,7 @@ def test_case_68_no_input_in_fields_result_error_message(driver):
     # 2. Check Custom JS Validation (This part is where BUG #16 likely fails)
     # Your JS should create a <div class="error-message">Name is required</div>
     js_errors = page.get_contact_validation_errors()
-    assert "Name is required" in js_errors, "BUG #16: HTML5 worked, but custom js error div is missing!"
+    assert "Name is required" in js_errors, "BHS2-22: HTML5 worked, but custom js error div is missing!"
 
 # --- To use as a tool, if this were bug free, this is how it would look... ---
 # def test_case_68_all_fields_empty_validation(driver):
@@ -533,7 +533,7 @@ def test_case_68_no_input_in_fields_result_error_message(driver):
 #       actual_js_errors = page.contact_validation_errors()
 #       assert expected_errors in actual_js_errors
 
-@pytest.mark.xfail(reason="BUG #16: JS 'Name is required' message fails to trigger even when other fields are valid.")
+@pytest.mark.xfail(reason="BHS2-23: JS 'Name is required' message fails to trigger even when other fields are valid.")
 def test_case_69_no_name_field_isolation(driver):
     # Case-69: Isolate the name field to test custom JS validation persistence ---
     page = BugHuntShop2Page(driver)
@@ -560,7 +560,7 @@ def test_case_69_no_name_field_isolation(driver):
     js_errors = page.get_contact_validation_errors()
 
     # Based on your observation, this will fail because the list is empty []
-    assert "Name is required" in js_errors, "BUG #16: Persistent JS error message is missing!"
+    assert "Name is required" in js_errors, "BHS2-23: Persistent JS error message is missing!"
 
 # --- Valid character group (Cases 70,71,74,75(a,b,c)) ---
 @pytest.mark.parametrize("term, case_id", [
