@@ -61,20 +61,47 @@ INVALID_NAME_101_CHAR = "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMari
 INVALID_NAME_102_CHAR = "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMar"
 
 # ========== CONTACT - EMAIL ==========
-VALID_EMAIL = "AnaMarie@gmail.com"
-VALID_EMAIL_PLUS_TAG = "AnaMarie+music@gmail.com"
+VALID_EMAIL_LATIN = "AnaMarie@gmail.com"
 VALID_EMAIL_DASH = "Ana-Marie@gmail.com"
 VALID_EMAIL_PERIOD = "Ana.Marie@gmail.com"
-INVALID_EMAIL_NO_AT = "AnaMariegmail.com"
-INVALID_EMAIL_DOUBLE_AT = "AnaMarie@@gmail.com"
-INVALID_EMAIL_NO_DOMAIN = "AnaMarie@"
-INVALID_EMAIL_NO_USERNAME = "@gmail.com"
-INVALID_EMAIL_SPACE_BEFORE = " AnaMarie@gmail.com"
+VALID_EMAIL_COMMA = "Ana,Marie@gmail.com"
+VALID_EMAIL_APOSTROPHE = "Ana'Marie@gmail.com"
+VALID_EMAIL_SPACE_BEFORE = " AnaMarie@gmail.com"
+VALID_EMAIL_PLUS_TAG_LATIN = "AnaMarie+music@gmail.com"
+VALID_EMAIL_UNICODE = "☺☻♥♦@gmail.com"
+VALID_EMAIL_NUMBERS = "12345@gmail.com"
+VALID_EMAIL_SPECIAL = "!#$%@gmail.com"
+VALID_EMAIL_SPECIAL_MIX = "Ana$@gmail.com"
+VALID_EMAIL_8_CHAR = "AnaMarie@gmail.com"
+VALID_EMAIL_121_CHAR = ("AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+                        "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieA@gmail.com")
+VALID_EMAIL_254_CHAR = ("AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+                        "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+                        "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMar@gmail.com")
 INVALID_EMAIL_SPACE_BETWEEN = "Ana Marie@gmail.com"
 INVALID_EMAIL_SPACE_AFTER = "AnaMarie @gmail.com"
 INVALID_EMAIL_NON_LATIN = "杰伊哦'娜 弗勒@gmail.com"
 INVALID_EMAIL_HTML = "<head>@gmail.com"
-INVALID_EMAIL_SPECIAL = "!@#$%@gmail.com"
+INVALID_EMAIL_NO_LOCAL_NAME = "@gmail.com"
+INVALID_EMAIL_NO_AT = "AnaMariegmail.com"
+INVALID_EMAIL_DOUBLE_AT = "AnaMarie@@gmail.com"
+INVALID_EMAIL_NO_DOMAIN = "AnaMarie@"
+INVALID_EMAIL_0_CHAR = ""
+INVALID_EMAIL_255_CHAR = (
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMari@gmail.com"
+)
+INVALID_EMAIL_256_CHAR = (
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie@gmail.com"
+)
+INVALID_EMAIL_257_CHAR = (
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieA@gmail.com"
+)
 
 # ========== CONTACT - PHONE ==========
 VALID_PHONE = "2149292325"

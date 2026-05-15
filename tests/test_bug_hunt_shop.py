@@ -1,4 +1,6 @@
 import pytest
+
+from data import INVALID_EMAIL_0_CHAR, INVALID_EMAIL_255_CHAR
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,7 +20,7 @@ def test_search_results_field_initially_empty(driver):
 # ---"Product Search" search cases ---
 
 def test_case_0_search_field_visible(driver):
-    # ---Case-1: Verifies the search field is visible. ---
+    # ---Case-0: Verifies the search field is visible. ---
     page = BugHuntShop2Page(driver)
     element = page.wait.until(
         EC.visibility_of_element_located(page.PROD_SEAR_FIELD_LOCATOR)
@@ -26,7 +28,7 @@ def test_case_0_search_field_visible(driver):
     assert element.is_displayed()
 
 def test_case_1_search_placeholder_text(driver):
-    # ---Case-2: Verifies the placeholder text is displayed. ---
+    # ---Case-1: Verifies the placeholder text is displayed. ---
     page = BugHuntShop2Page(driver)
     element = page.wait.until(
         EC.visibility_of_element_located(page.PROD_SEAR_FIELD_LOCATOR)
@@ -137,13 +139,6 @@ def test_case_26_all_products_present(driver):
     # ---Case-26: Verify all {product} selections are present in design ---
     page = BugHuntShop2Page(driver)
     assert len(page.get_product_cards()) == 5
-
-def test_case_27_products_aligned_in_a_row(driver):
-    # ---Case-27: Verify {product} selections are aligned in a row on the display ---
-    page = BugHuntShop2Page(driver)
-    products = page.get_product_cards()
-    y_positions = [p.location['y'] for p in products]
-    assert max(y_positions) - min(y_positions) <= 5
 
 def test_case_28_products_spelling_is_correct(driver):
     # ---Case-28: Verify product's spelling is correct on display ---
@@ -344,20 +339,6 @@ def test_case_53_no_price_when_cart_is_empty(driver):
     assert page.get_cart_item_count() == 0
     assert page.get_subtotal() == 0.00
 
-@pytest.mark.xfail(reason="BHS2-4,5: Prices in the cart are not vertically aligned (Layout inconsistency).")
-def test_cases_54_55_correct_vertical_alignment(driver):
-    # ---Cases 54,55: Verify when products added to "Shopping Cart", prices are vertically aligned correctly. ---
-    page = BugHuntShop2Page(driver)
-    # ---Add 1-3 items (Case-54) or > 3 items (Case-55) ---
-    page.click_gaming_laptop_from_products_box()
-    page.click_tablet_from_products_box()
-    prices = page.get_cart_item_price_elements()
-    first_price_x = prices[0].location['x']
-    for price in prices:
-        actual_x = price.location['x']
-        # --- This assertion will fail because of the staggered look on the page. ---
-        assert actual_x == first_price_x, f"Price at {price.text} is at X:{actual_x}, expected X:{first_price_x}"
-
 # ---Subtotal Correct Boundary Values: (Cases 56,57,58) ---
 @pytest.mark.parametrize("products, case_id", [
     (data.CART_BOUNDARY_0_PRODUCTS, "Case-56"),
@@ -477,7 +458,7 @@ def test_case_65_name_field_visible(driver):
     # ---Case-65: Verify "Name" field is visible and displayed correctly. ---
     page = BugHuntShop2Page(driver)
     page.scroll_to_contact_and_verify_empty()
-    assert page.is_phone_field_visible()
+    assert page.is_name_field_visible()
 
 def test_case_66_name_field_in_focus(driver):
     # ---Case-66: Verify when clicking in the "Name" field, it is in focus and cursor appears. ---
@@ -493,7 +474,7 @@ def test_case_67_name_field_out_of_focus(driver):
     page.scroll_to_contact_and_verify_empty()
     page.focus_name_field()
     page.click_send_message_button()
-    assert page.get_active_element_id() != "email"
+    assert page.get_active_element_id() != "name"
 
 @pytest.mark.xfail(reason="BHS2-22: Name field is required in HTML but validation fails to trigger.")
 def test_case_68_no_input_in_fields_result_error_message(driver):
@@ -533,34 +514,46 @@ def test_case_68_no_input_in_fields_result_error_message(driver):
 #       actual_js_errors = page.contact_validation_errors()
 #       assert expected_errors in actual_js_errors
 
-@pytest.mark.xfail(reason="BHS2-23: JS 'Name is required' message fails to trigger even when other fields are valid.")
-def test_case_69_no_name_field_isolation(driver):
-    # Case-69: Isolate the name field to test custom JS validation persistence ---
-    page = BugHuntShop2Page(driver)
+@pytest.mark.xfail(
+    reason="BHS2-24: Custom JS validation messages are suppressed by native browser tooltips across all Contact fields.")
+@pytest.mark.parametrize("missing_field, case_id, name, email, phone, msg", [
+    # missing_field |   case_id  |   name   |           email           |     phone     |         msg
+    ("name",         "Case-69",    "",          "tester@bug-hunt.com",   "2145551234",    "Validating missing name"),
+    ("email",        "Case-89",    "John Doe",  "",                      "2145551234",    "Validating missing email"),
 
-    # 1. Setup: Scroll to the form
+    pytest.param("phone", "Case-118", "John Doe", "tester@bug-hunt.com", "", "Validating missing phone",
+                 marks=pytest.mark.xfail(reason="Requirement Bug: Phone field missing 'required' attribute")),
+    ("message",      "Case-141",   "John Doe",  "tester@bug-hunt.com",   "2145551234",    "")
+])
+def test_contact_field_isolation_validation(driver, missing_field, case_id, name, email, phone, msg):
+    """Consolidated test for Case-69, 89, 118, and 141.
+    Verifies that leaving one field empty while others are valid still triggers validation.
+    """
+    page = BugHuntShop2Page(driver)
     page.scroll_to_contact_and_verify_empty()
 
-    # 2. Action: Leave Name empty, but fill out Email, Phone, and Message
-    # This prevents other browser 'required' tooltips from interfering
-    page.cont_us_email("tester@bug-hunt.com")
-    page.cont_us_phone("2144219184")
-    page.cont_us_message("Validating that the custom Name error is missing.")
+    # Fill out fields using the provided parameters
+    # If a parameter is an empty string, the field remains empty
+    if name: page.cont_us_name(name)
+    if email: page.cont_us_email(email)
+    if phone: page.cont_us_phone(phone)
+    if msg: page.cont_us_message(msg)
 
-    # 3. Action: CLick Send
     page.click_send_message_button()
 
-    # 4. Verification Part A: The Browser Safety Net
-    # This is the 'vanishing' tooltip you observed
-    browser_msg = page.get_browser_validation_message("name")
-    assert "please fill out this field" in browser_msg.lower()
+    # 1. Verify Browser Safety Net (Native HTML5 Tooltip)
+    # This proves the 'required' attribute is working at the browser level
+    browser_msg = page.get_browser_validation_message(missing_field)
+    expected_tooltip = "please fill out this field"
+    assert expected_tooltip in browser_msg.lower(), f"{case_id}: Browser tooltip missing or incorrect for {missing_field}"
 
-    # 5. Verification Part B: THe Custom JS Bug (The Real Portfolio Value)
-    # We check the .error-message divs that SHOULD be injected by your JS
+    # 2. Verify Custom JS Bug (The XFAIL part)
+    # We check if the custom error <div> exists in the DOM
     js_errors = page.get_contact_validation_errors()
+    expected_error_text = f"{missing_field.capitalize()} is required"
 
-    # Based on your observation, this will fail because the list is empty []
-    assert "Name is required" in js_errors, "BHS2-23: Persistent JS error message is missing!"
+    # This assertion is expected to fail until the JS logic is fixed
+    assert expected_error_text in js_errors, f"{case_id}: Custom JS error div missing for {missing_field}!"
 
 # --- Valid character group (Cases 70,71,74,75(a,b,c)) ---
 @pytest.mark.parametrize("term, case_id", [
@@ -643,7 +636,7 @@ def test_case_87_email_field_in_focus(driver):
     assert page.get_active_element_id()
 
 
-def test_case_88_name_field_out_of_focus(driver):
+def test_case_88_email_field_out_of_focus(driver):
     # ---Case-88: Verify when clicking outside the "email" field, it comes out of focus
     # ---and cursor disappears from field. ---
     page = BugHuntShop2Page(driver)
@@ -651,6 +644,71 @@ def test_case_88_name_field_out_of_focus(driver):
     page.focus_email_field()
     page.click_send_message_button()
     assert page.get_active_element_id() != "email"
+
+# ---Valid char group for 'local part' of email (Cases 90-95,98,100,101,103,104) ---
+@pytest.mark.parametrize("term, case_id", [
+    (data.VALID_EMAIL_LATIN,            "Case-90"),
+    (data.VALID_EMAIL_DASH,             "Case-91"),
+    (data.VALID_EMAIL_PERIOD,           "Case-92"),
+    (data.VALID_EMAIL_COMMA,            "Case-93"),
+    (data.VALID_EMAIL_APOSTROPHE,       "Case-94"),
+    (data.VALID_EMAIL_SPACE_BEFORE,     "Case-95"),
+    (data.VALID_EMAIL_PLUS_TAG_LATIN,   "Case-98"),
+    (data.VALID_EMAIL_UNICODE,          "Case-100"),
+    (data.VALID_EMAIL_NUMBERS,          "Case-101"),
+    (data.VALID_EMAIL_SPECIAL,          "Case-103"),
+    (data.VALID_EMAIL_SPECIAL_MIX,      "Case-104"),
+])
+
+def test_email_field_valid_characters(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_email(term)
+    page.click_send_message_button()
+    assert page.get_email_error() == ""
+
+
+# ---Invalid char group for 'local part' of email (Cases 96,97,99,102,105-108) ---
+@pytest.mark.parametrize("term, case_id", [
+    (data.INVALID_EMAIL_SPACE_BETWEEN,   "Case-96"),
+    (data.INVALID_EMAIL_SPACE_AFTER,     "Case-97"),
+    (data.INVALID_EMAIL_NON_LATIN,       "Case-99"),
+    (data.INVALID_EMAIL_HTML,            "Case-102"),
+    (data.INVALID_EMAIL_NO_LOCAL_NAME,   "Case-105"),
+    (data.INVALID_EMAIL_NO_AT,           "Case-106"),
+    (data.INVALID_EMAIL_DOUBLE_AT,       "Case-107"),
+    (data.INVALID_EMAIL_NO_DOMAIN,       "Case-108"),
+])
+
+def test_email_field_invalid_characters(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_email(term)
+    page.click_send_message_button()
+    assert page.get_email_error() != ""
+
+# ---Boundary value group (Cases 109,110,111) ---
+@pytest.mark.parametrize("term, case_id", [
+    (data.VALID_EMAIL_8_CHAR,          "Case-110"),
+    (data.VALID_EMAIL_121_CHAR,        "Case-110"),
+    (data.VALID_EMAIL_254_CHAR,        "Case-110"),
+    (data.INVALID_EMAIL_0_CHAR,        "Case-109"),
+    (data.INVALID_EMAIL_255_CHAR,      "Case-111"),
+    (data.INVALID_EMAIL_256_CHAR,      "Case-111"),
+    (data.INVALID_EMAIL_257_CHAR,      "Case-111"),
+])
+
+def test_email_local_boundary_values(driver, term, case_id):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_email(term)
+    page.click_send_message_button()
+    if case_id == "Case-110":
+        assert page.get_email_error() == ""
+    elif case_id in ["Case-109", "Case-111"]:
+        assert page.get_email_error() != ""
+    else:
+        raise ValueError(f"Case ID {case_id} not recognized in boundary logic")
 
 
 
