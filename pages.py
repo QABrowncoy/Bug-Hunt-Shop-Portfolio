@@ -466,8 +466,12 @@ class BugHuntShop2Page:
         element = self.wait.until(EC.presence_of_element_located((By.ID, "phoneError")))
         return element.text.strip()
 
+    def get_phone_error_2(self):
+        element = self.wait.until(lambda d: d.find_element(By.CLASS_NAME, "field-help").text.script() != "")
+        return self.driver.find_element(By.CLASS_NAME, "field-help").text.strip()
+
     def get_message_error(self):
-        element = self.wait.until(EC.presence_of_element_located((By.ID, "messageError")))
+        element = self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, "field-help")))
         return element.text.strip()
 
     def get_username_error(self):

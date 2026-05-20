@@ -748,9 +748,16 @@ def test_case_116_phone_field_out_of_focus(driver):
     page.click_send_message_button()
     assert page.get_active_element_id() != "phone"
 
-pytest.mark.parametrize("term, case-id", [
-    (data.VALID_PHONE_)
-])
+def test_case_118_phone_field_extra_error_message(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_name("name")
+    page.cont_us_email("AnaMarie@gmail.com")
+    page.cont_us_message("message")
+    page.click_send_message_button()
+    assert page.get_phone_error() != ""
+    assert page.get_phone_error_2() != ""
+
 
 
 
