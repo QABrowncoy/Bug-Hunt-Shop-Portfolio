@@ -1,6 +1,4 @@
 import pytest
-
-from data import INVALID_EMAIL_0_CHAR, INVALID_EMAIL_255_CHAR
 from pages import BugHuntShop2Page
 import data
 from selenium.webdriver.support import expected_conditions as EC
@@ -526,7 +524,7 @@ def test_case_68_no_input_in_fields_result_error_message(driver):
     ("message",      "Case-141",   "John Doe",  "tester@bug-hunt.com",   "2145551234",    "")
 ])
 def test_contact_field_isolation_validation(driver, missing_field, case_id, name, email, phone, msg):
-    """Consolidated test for Case-69, 89, 118, and 141.
+    """Consolidated test for Case-69, 89, 117, and 140.
     Verifies that leaving one field empty while others are valid still triggers validation.
     """
     page = BugHuntShop2Page(driver)
@@ -692,7 +690,8 @@ def test_email_field_invalid_characters(driver, term, case_id):
     (data.VALID_EMAIL_8_CHAR,          "Case-110"),
     (data.VALID_EMAIL_121_CHAR,        "Case-110"),
     (data.VALID_EMAIL_254_CHAR,        "Case-110"),
-    (data.INVALID_EMAIL_0_CHAR,        "Case-109"),
+    pytest.param(data.INVALID_EMAIL_0_CHAR,  "Case-109",
+                 marks=pytest.mark.xfail(reason="BHS2-25: Browser tooltip blocks custom JS error for empty field.")),
     (data.INVALID_EMAIL_255_CHAR,      "Case-111"),
     (data.INVALID_EMAIL_256_CHAR,      "Case-111"),
     (data.INVALID_EMAIL_257_CHAR,      "Case-111"),
@@ -709,6 +708,50 @@ def test_email_local_boundary_values(driver, term, case_id):
         assert page.get_email_error() != ""
     else:
         raise ValueError(f"Case ID {case_id} not recognized in boundary logic")
+
+def test_case_112_invalid_email_error(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_email("@gmail.com")
+    page.click_send_message_button()
+    assert page.get_email_error() == "Please enter a valid email address (example@domain.com)"
+
+def test_case_113_browser_tooltip_with_multiple_button_press(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.cont_us_email("@gmail.com")
+    page.click_send_message_button()
+    page.click_send_message_button()
+    expected_error_msg = "Please enter a valid email address (example@domain.com)"
+
+    browser_validation_message = page.get_browser_validation_message("email")
+    assert "Please enter a part followed by '@'" in browser_validation_message
+    actual_js_error = page.get_contact_validation_errors()
+    assert expected_error_msg in actual_js_error
+
+def test_case_114_phone_field_visible(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    assert page.is_phone_field_visible()
+
+def test_case_115_phone_field_in_focus(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_phone_field()
+    assert page.get_active_element_id() == "phone"
+
+def test_case_116_phone_field_out_of_focus(driver):
+    page = BugHuntShop2Page(driver)
+    page.scroll_to_contact_and_verify_empty()
+    page.focus_phone_field()
+    assert page.get_active_element_id() == "phone"
+    page.click_send_message_button()
+    assert page.get_active_element_id() != "phone"
+
+pytest.mark.parametrize("term, case-id", [
+    (data.VALID_PHONE_)
+])
+
 
 
 

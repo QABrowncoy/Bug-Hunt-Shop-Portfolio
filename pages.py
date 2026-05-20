@@ -49,7 +49,11 @@ class BugHuntShop2Page:
         self.driver = driver
 
     def get_active_element_id(self):
-        return self.driver.switch_to.active_element.get_attribute("id")
+        try:
+            active_el = self.driver.switch_to.active_element
+            return active_el.get_attribute("id") or "NO_ID_FOUND"
+        except Exception:
+            return "ELEMENT_NOT_FOUND"
 
     def enter_product_search(self, search_input):
         try:

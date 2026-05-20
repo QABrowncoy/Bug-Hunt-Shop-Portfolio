@@ -77,7 +77,7 @@ VALID_EMAIL_121_CHAR = ("AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMari
                         "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieA@gmail.com")
 VALID_EMAIL_254_CHAR = ("AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
                         "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
-                        "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMar@gmail.com")
+                        "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaM@gmail.com")
 INVALID_EMAIL_SPACE_BETWEEN = "Ana Marie@gmail.com"
 INVALID_EMAIL_SPACE_AFTER = "AnaMarie @gmail.com"
 INVALID_EMAIL_NON_LATIN = "杰伊哦'娜 弗勒@gmail.com"
@@ -90,17 +90,17 @@ INVALID_EMAIL_0_CHAR = ""
 INVALID_EMAIL_255_CHAR = (
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
-    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMari@gmail.com"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMa@gmail.com"
 )
 INVALID_EMAIL_256_CHAR = (
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
-    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie@gmail.com"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMar@gmail.com"
 )
 INVALID_EMAIL_257_CHAR = (
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
     "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarie"
-    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieA@gmail.com"
+    "AnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMarieAnaMari@gmail.com"
 )
 
 # ========== CONTACT - PHONE ==========
@@ -110,7 +110,8 @@ VALID_PHONE_DASH = "555-1234567"
 VALID_PHONE_PARENS = "(555)1234567"
 VALID_PHONE_10_CHAR = "5551234567"
 VALID_PHONE_11_CHAR = "55512345678"
-INVALID_PHONE_8_CHAR = "555123456"
+INVALID_PHONE_8_CHAR = "55512345"
+INVALID_PHONE_9_CHAR = "555123456"
 INVALID_PHONE_LETTERS = "A5551234567"
 INVALID_PHONE_COMMA = "555,1234567"
 INVALID_PHONE_APOSTROPHE = "555'1234567"
